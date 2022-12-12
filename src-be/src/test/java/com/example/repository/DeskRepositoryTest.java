@@ -9,8 +9,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -19,7 +17,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @ExtendWith(SpringExtension.class)
@@ -33,24 +32,24 @@ public class DeskRepositoryTest {
 
     @Test
     public void findAllWithTasksIfProjectExist() {
-        Page<Desk> actualDesks =
-                deskRepository.findAllByProjectIdEquals(1L, Pageable.ofSize(3));
+        List<Desk> actualDesks =
+                deskRepository.findAllByProjectIdEquals(1L);
 
 
         assertNotNull(actualDesks);
-        assertEquals(3, actualDesks.getContent().size());
+        assertEquals(3, actualDesks.size());
 
-        List<Desk> expectedDesks = getExpectedDesksUsingProjectProxy(actualDesks.getContent().get(0).getProject());
-        assertEquals(expectedDesks, actualDesks.getContent());
+        List<Desk> expectedDesks = getExpectedDesksUsingProjectProxy(actualDesks.get(0).getProject());
+        assertEquals(expectedDesks, actualDesks);
     }
 
     @Test
     public void findAllWithTasksIfProjectDoesNotExist() {
-        Page<Desk> actualDesks =
-                deskRepository.findAllByProjectIdEquals(999L, Pageable.ofSize(3));
+        List<Desk> actualDesks =
+                deskRepository.findAllByProjectIdEquals(999L);
 
         assertNotNull(actualDesks);
-        assertEquals(0, actualDesks.getContent().size());
+        assertEquals(0, actualDesks.size());
     }
 
     private List<Desk> getExpectedDesksUsingProjectProxy(Project project) {
