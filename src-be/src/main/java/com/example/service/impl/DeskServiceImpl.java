@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +35,9 @@ public class DeskServiceImpl implements DeskService {
 
     @Override
     public Desk update(Desk desk) {
+        if (!deskRepository.existsById(desk.getId())) {
+            throw new EntityNotFoundException(String.format("Can't find Desk with id: %d", desk.getId()));
+        }
         return deskRepository.save(desk);
     }
 
@@ -44,14 +48,14 @@ public class DeskServiceImpl implements DeskService {
             throw new WrongArgumentException(String.format("Task %s doesn't exist in desk %s", task.getTitle(), desk.getName()));
         }
 
-        return update(desk);
+        return forceUpdate(desk);
     }
 
     @Override
     public Desk addTaskToDeskById(Long deskId, Task task) {
         Desk desk = getByIdWithTasks(deskId);
         desk.addTask(task);
-        return update(desk);
+        return forceUpdate(desk);
     }
 
     @Override
@@ -68,6 +72,22 @@ public class DeskServiceImpl implements DeskService {
 
     @Override
     public List<Desk> updateAll(List<Desk> desks) {
-        return deskRepository.saveAll(desks);
+        List<Desk> existingDesks = desks.stream()
+                .filter(desk -> deskRepository.existsById(desk.getId()))
+                .collect(Collectors.collectingAndThen(Collectors.toList(), result -> {
+                    if (result.isEmpty()) throw new WrongArgumentException("None of the passed desks exist");
+                    else return result;
+                }));
+        return deskRepository.saveAll(existingDesks);
+    }
+
+    /**
+     * Method to unchecked save of entities
+     *
+     * @param desk - entity to update in database
+     * @return - updated entity
+     */
+    private Desk forceUpdate(Desk desk) {
+        return deskRepository.save(desk);
     }
 }

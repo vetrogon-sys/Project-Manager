@@ -26,7 +26,6 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @NamedEntityGraphs({

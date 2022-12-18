@@ -61,13 +61,24 @@ public class DeskRepositoryTest {
         creator.setLastName("Green");
 
         project.setCreator(creator);
-        return new ArrayList<>(
-                Arrays.asList(
-                        Desk.builder().id(1L).name("Discus").project(project).build(),
-                        Desk.builder().id(2L).name("Development").project(project).build(),
-                        Desk.builder().id(3L).name("To Test").project(project).build()
 
-                )
+        Desk d1 = new Desk();
+        d1.setId(1L);
+        d1.setName("Discus");
+        d1.setProject(project);
+
+        Desk d2 = new Desk();
+        d2.setId(2L);
+        d2.setName("Development");
+        d2.setProject(project);
+
+        Desk d3 = new Desk();
+        d3.setId(3L);
+        d3.setName("To Test");
+        d3.setProject(project);
+
+        return new ArrayList<>(
+                Arrays.asList(d1, d2, d3)
         );
     }
 
