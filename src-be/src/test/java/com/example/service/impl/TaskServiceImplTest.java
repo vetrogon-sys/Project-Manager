@@ -155,7 +155,7 @@ public class TaskServiceImplTest {
         desk.setTasks(tasks);
 
         Pageable pageable = Pageable.ofSize(2);
-        Page<Task> taskPage = new PageImpl(tasks, pageable, 2);
+        Page<Task> taskPage = new PageImpl<>(tasks, pageable, 2);
         when(taskRepository.findAllByDesk(desk, pageable))
                 .thenReturn(taskPage);
 

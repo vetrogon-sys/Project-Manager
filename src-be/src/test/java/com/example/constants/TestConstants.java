@@ -1,10 +1,14 @@
 package com.example.constants;
 
+import com.example.dto.DeskDto;
+import com.example.dto.TaskDto;
 import com.example.dto.UserDto;
 import com.example.entity.Desk;
 import com.example.entity.Project;
+import com.example.entity.Task;
 import com.example.entity.User;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,10 +52,79 @@ public class TestConstants {
         d3.setProject(project);
 
         return new ArrayList<>(
-                Arrays.asList(
+                List.of(
                         d1, d2, d3
                 )
         );
+    }
+
+    public static DeskDto getDeskDto() {
+        DeskDto desk = new DeskDto();
+        desk.setId(1L);
+        desk.setName("Testing desk");
+        return desk;
+    }
+
+    public static TaskDto getTaskDtoWithDesk() {
+        TaskDto task = new TaskDto();
+        task.setId(1L);
+        task.setTitle("Testing task");
+        task.setCreationDate(LocalDate.of(2010, 11, 12));
+        task.setDesk(getDeskDto());
+        return task;
+    }
+
+    public static TaskDto getTaskDtoWithoutDesk() {
+        TaskDto task = new TaskDto();
+        task.setId(1L);
+        task.setTitle("Testing task");
+        task.setCreationDate(LocalDate.of(2010, 11, 12));
+        return task;
+    }
+
+    public static List<Task> getTasksList() {
+        Task t1 = new Task();
+        t1.setId(1L);
+        t1.setTitle("Testing t1");
+        t1.setAssignedUser(getUserEqualsToExisting());
+        t1.setCreationDate(LocalDate.of(2010, 11, 12));
+        t1.setDesk(getDesk());
+        Task t2 = new Task();
+        t2.setId(2L);
+        t2.setTitle("Testing t2");
+        t2.setAssignedUser(getUserEqualsToExisting());
+        t2.setCreationDate(LocalDate.of(2010, 11, 12));
+        t2.setDesk(getDesk());
+
+        return new ArrayList<>(
+                List.of(t1, t2)
+        );
+    }
+
+    public static Task getTaskWithDesk() {
+        Task task = new Task();
+        task.setId(1L);
+        task.setTitle("Testing task");
+        task.setAssignedUser(getUserEqualsToExisting());
+        task.setCreationDate(LocalDate.of(2010, 11, 12));
+        task.setDesk(getDesk());
+        return task;
+    }
+
+    public static Task getTaskWithoutDesk() {
+        Task task = new Task();
+        task.setId(1L);
+        task.setTitle("Testing task");
+        task.setAssignedUser(getUserEqualsToExisting());
+        task.setCreationDate(LocalDate.of(2010, 11, 12));
+        return task;
+    }
+
+    public static Desk getDesk() {
+        Desk desk = new Desk();
+        desk.setId(1L);
+        desk.setName("Testing desk");
+        return desk;
     }
 
     public static Project getProjectWithId(Long projectId) {
