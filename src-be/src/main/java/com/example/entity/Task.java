@@ -14,6 +14,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.Table;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -26,6 +29,12 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@NamedEntityGraphs({
+        @NamedEntityGraph(
+                name = "task-with-desk",
+                attributeNodes = {@NamedAttributeNode("desk")}
+        )
+})
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

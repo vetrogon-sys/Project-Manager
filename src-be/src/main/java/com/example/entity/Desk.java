@@ -1,7 +1,6 @@
 package com.example.entity;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +12,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
@@ -23,9 +25,14 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@NamedEntityGraphs({
+        @NamedEntityGraph(
+                name = "desk-with-tasks",
+                attributeNodes = {@NamedAttributeNode("tasks")}
+        )
+})
 public class Desk {
 
     @Id
@@ -43,9 +50,16 @@ public class Desk {
 
     public void addTask(Task task) {
         if (Objects.isNull(tasks)) {
-            this.tasks = new ArrayList<>();
+            tasks = new ArrayList<>();
         }
         tasks.add(task);
+    }
+
+    public Boolean removeTask(Task task) {
+        if (Objects.isNull(tasks) || !tasks.contains(task)) {
+            return Boolean.FALSE;
+        }
+        return tasks.remove(task);
     }
 
     @Override

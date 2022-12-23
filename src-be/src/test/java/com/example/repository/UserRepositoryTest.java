@@ -1,5 +1,6 @@
 package com.example.repository;
 
+import com.example.constants.TestConstants;
 import com.example.entity.User;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,16 +23,15 @@ import static org.junit.Assert.assertTrue;
 @Sql({"users/insert_users.sql"})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class UserRepositoryTest {
-    private static final String EXISTING_EMAIL = "user_test@gmail.com";
 
     @Autowired
     private UserRepository userRepository;
 
     @Test
     public void findByEmailTestIfUserExist() {
-        Optional<User> actualUser = userRepository.findByEmail(EXISTING_EMAIL);
+        Optional<User> actualUser = userRepository.findByEmail(TestConstants.EXISTING_EMAIL);
 
-        User expectedUser = getUserEqualsToExisting();
+        User expectedUser = TestConstants.getUserEqualsToExisting();
 
         assertTrue(actualUser.isPresent());
         assertEquals(expectedUser, actualUser.get());
@@ -39,18 +39,11 @@ public class UserRepositoryTest {
 
     @Test
     public void findByEmailTestIfUserDoesNotExist() {
-        Optional<User> actualUser = userRepository.findByEmail("non-existed-email@gmail.com");
+        Optional<User> actualUser = userRepository.findByEmail(TestConstants.NON_EXISTED_EMAIL);
 
         assertTrue(actualUser.isEmpty());
     }
 
-    private User getUserEqualsToExisting() {
-        User user = new User();
-        user.setId(1L);
-        user.setEmail(EXISTING_EMAIL);
-        user.setFirstName("Adam");
-        user.setLastName("Green");
-        return user;
-    }
+
 
 }
