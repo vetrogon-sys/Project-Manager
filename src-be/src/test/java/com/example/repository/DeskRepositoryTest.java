@@ -1,5 +1,7 @@
 package com.example.repository;
 
+import com.example.config.AutoConfigureH2TestDatabase;
+import com.example.config.FillDatabaseWithTestedData;
 import com.example.entity.Desk;
 import com.example.entity.Project;
 import com.example.entity.User;
@@ -7,7 +9,6 @@ import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -23,8 +24,8 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(SpringRunner.class)
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-@Sql({"desks/insert_desks.sql"})
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@AutoConfigureH2TestDatabase
+@FillDatabaseWithTestedData
 public class DeskRepositoryTest {
 
     @Autowired
