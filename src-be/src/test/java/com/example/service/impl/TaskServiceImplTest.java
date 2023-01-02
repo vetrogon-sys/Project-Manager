@@ -136,32 +136,26 @@ public class TaskServiceImplTest {
 
     @Test
     public void getAllFromDesk() {
-        Desk desk = new Desk();
-        long taskId = 1L;
-        desk.setId(taskId);
-        desk.setName("Tested desk");
+        long deskId = 1L;
 
         Task t1 = new Task();
         t1.setId(1L);
         t1.setTitle("Test tasks");
-        t1.setDesk(desk);
 
         Task t2 = new Task();
         t2.setId(2L);
         t2.setTitle("Test tasks");
-        t2.setDesk(desk);
 
         ArrayList<Task> tasks = new ArrayList<>(Arrays.asList(t1, t2));
-        desk.setTasks(tasks);
 
         Pageable pageable = Pageable.ofSize(2);
         Page<Task> taskPage = new PageImpl<>(tasks, pageable, 2);
-        when(taskRepository.findAllByDesk(desk, pageable))
+        when(taskRepository.findAllByDeskIdEquals(deskId, pageable))
                 .thenReturn(taskPage);
 
-        Page<Task> actualTasks = taskService.getAllFromDesk(desk, pageable);
+        Page<Task> actualTasks = taskService.getAllFromDeskById(deskId, pageable);
 
-        verify(taskRepository, times(1)).findAllByDesk(desk, pageable);
+        verify(taskRepository, times(1)).findAllByDeskIdEquals(deskId, pageable);
         verifyNoMoreInteractions(taskRepository);
         assertEquals(taskPage, actualTasks);
     }

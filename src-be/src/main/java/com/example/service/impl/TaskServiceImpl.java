@@ -49,4 +49,9 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.findAllByDesk(desk, pageable);
     }
 
+    @Override
+    public Page<Task> getAllFromDeskById(Long deskId, Pageable pageable) {
+        return taskRepository.findAllByDeskIdEquals(deskId, pageable);
+    }
+
 }
