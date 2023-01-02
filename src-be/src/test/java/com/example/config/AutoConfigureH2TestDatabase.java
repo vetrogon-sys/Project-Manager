@@ -9,9 +9,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+@PropertySource(value = {"classpath:test-application.properties"})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.AUTO_CONFIGURED,
         connection = EmbeddedDatabaseConnection.H2)
-@PropertySource(value = {"classpath:test-application.properties"})
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AutoConfigureH2TestDatabase {
