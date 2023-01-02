@@ -57,7 +57,7 @@ public class TasksInDeskServiceImpl implements TasksInDeskService {
 
     @Override
     public Page<TaskDto> getTasksFromDesk(Long deskId, Pageable pageable) {
-        return taskService.getAllFromDesk(deskService.getById(deskId), pageable)
+        return taskService.getAllFromDeskById(deskId, pageable)
                 .map(taskMapper::taskToTaskDto);
     }
 
