@@ -17,11 +17,13 @@ import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class ServicesExceptionsHandler extends ResponseEntityExceptionHandler {
     private static final String STRING_VALUE_ERROR = "error";
+    private static final String DEFAULT_EXCEPTION_MASSAGE = "Wrong passed data";
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleEntityNotFoundException(EntityNotFoundException exception,
@@ -49,7 +51,8 @@ public class ServicesExceptionsHandler extends ResponseEntityExceptionHandler {
         response.setTimestamp(LocalDateTime.now());
         response.setErrors(ex.getAllErrors().stream()
                 .collect(Collectors.toMap(
-                        e -> ((FieldError) e).getField(), DefaultMessageSourceResolvable::getDefaultMessage
+                        e -> ((FieldError) e).getField(),
+                        e -> Optional.ofNullable(e.getDefaultMessage()).orElse(DEFAULT_EXCEPTION_MASSAGE)
                 )));
 
         return ResponseEntity
