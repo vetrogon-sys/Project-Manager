@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class TaskController {
     private final TasksInDeskService tasksInDeskService;
 
     @PostMapping
-    public ResponseEntity<Void> createTask(@PathVariable Long deskId, @RequestBody TaskDto taskDto,
+    public ResponseEntity<Void> createTask(@PathVariable Long deskId, @Valid @RequestBody TaskDto taskDto,
                                            HttpServletRequest request) {
 
         TaskDto createdTask = tasksInDeskService.createTaskInDesk(deskId, taskDto);
