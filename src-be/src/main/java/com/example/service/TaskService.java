@@ -17,4 +17,6 @@ public interface TaskService {
 
     Page<Task> getAllFromDesk(Desk desk, Pageable pageable);
 
+    Page<Task> getAllFromDeskById(Long deskId, Pageable pageable);
+
 }

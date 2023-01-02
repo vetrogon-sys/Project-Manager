@@ -1,14 +1,14 @@
 package com.example.repository;
 
+import com.example.config.AutoConfigureH2TestDatabase;
+import com.example.config.FillDatabaseWithTestedData;
 import com.example.constants.TestConstants;
 import com.example.entity.User;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -20,8 +20,8 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringRunner.class)
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-@Sql({"users/insert_users.sql"})
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@AutoConfigureH2TestDatabase
+@FillDatabaseWithTestedData
 public class UserRepositoryTest {
 
     @Autowired
