@@ -51,23 +51,20 @@ public class TasksInDeskServiceImplTest {
         Desk defaultDesk = TestConstants.getDesk();
         Task defaultTask = TestConstants.getTaskWithoutDesk();
 
-        when(deskService.getByIdWithTasks(defaultDesk.getId()))
+        when(deskService.getById(defaultDesk.getId()))
                 .thenReturn(defaultDesk);
         when(taskMapper.taskDtoToTask(any(TaskDto.class)))
                 .thenReturn(defaultTask);
         when(taskService.create(any(Task.class)))
                 .thenAnswer(i -> i.getArguments()[0]);
-        when(deskService.addTaskToDeskById(anyLong(), any(Task.class)))
-                .thenReturn(defaultDesk);
         when(taskMapper.taskToTaskDto(any(Task.class)))
                 .thenReturn(TestConstants.getTaskDtoWithDesk());
 
         TaskDto actualTask = tasksInDeskService.createTaskInDesk(defaultDesk.getId(), TestConstants.getTaskDtoWithDesk());
 
-        verify(deskService, times(1)).getByIdWithTasks(defaultDesk.getId());
+        verify(deskService, times(1)).getById(defaultDesk.getId());
         verify(taskMapper, times(1)).taskDtoToTask(any(TaskDto.class));
         verify(taskService, times(1)).create(any(Task.class));
-        verify(deskService, times(1)).addTaskToDeskById(eq(defaultDesk.getId()), any(Task.class));
         verify(taskMapper, times(1)).taskToTaskDto(any(Task.class));
         assertEquals(TestConstants.getTaskDtoWithDesk(), actualTask);
     }
@@ -87,18 +84,15 @@ public class TasksInDeskServiceImplTest {
 
         when(taskService.getByIdWithDesk(taskId))
                 .thenReturn(defaultTask);
-        when(deskService.deleteTaskInDeskById(currentDeskId, defaultTask))
-                .thenReturn(firstDesk);
-        when(deskService.addTaskToDeskById(anotherDeskId, defaultTask))
-                .thenReturn(secondDesk);
+        when(deskService.getById(anotherDeskId))
+              .thenReturn(secondDesk);
         when(taskService.update(any(Task.class)))
                 .thenAnswer(i -> i.getArguments()[0]);
 
         tasksInDeskService.moveTaskToAnotherDesk(taskId, currentDeskId, anotherDeskId);
 
         verify(taskService, times(1)).getByIdWithDesk(taskId);
-        verify(deskService, times(1)).deleteTaskInDeskById(anyLong(), any(Task.class));
-        verify(deskService, times(1)).addTaskToDeskById(anyLong(), any(Task.class));
+        verify(deskService, times(1)).getById(anotherDeskId);
         verify(taskService, times(1)).update(any(Task.class));
 
         assertEquals(secondDesk, defaultTask.getDesk());
@@ -106,18 +100,11 @@ public class TasksInDeskServiceImplTest {
 
     @Test
     public void deleteTaskInDesk() {
-        Task defaultTask = TestConstants.getTaskWithDesk();
-
         long taskId = 1L;
         long deskId = 1L;
 
-        when(taskService.getByIdWithDesk(taskId))
-                .thenReturn(defaultTask);
-
         tasksInDeskService.deleteTaskInDesk(deskId, taskId);
 
-        verify(taskService, times(1)).getByIdWithDesk(taskId);
-        verify(deskService, times(1)).deleteTaskInDeskById(deskId, defaultTask);
         verify(taskService, times(1)).deleteById(taskId);
     }
 
@@ -130,17 +117,14 @@ public class TasksInDeskServiceImplTest {
 
         long deskId = 1L;
 
-        when(deskService.getById(deskId))
-                .thenReturn(TestConstants.getDesk());
-        when(taskService.getAllFromDesk(any(Desk.class), any(Pageable.class)))
+        when(taskService.getAllFromDeskById(anyLong(), any(Pageable.class)))
                 .thenReturn(taskPage);
         when(taskMapper.taskToTaskDto(any(Task.class)))
                 .thenReturn(TestConstants.getTaskDtoWithDesk());
 
         Page<TaskDto> actualTasks = tasksInDeskService.getTasksFromDesk(deskId, Pageable.ofSize(5));
 
-        verify(deskService, times(1)).getById(deskId);
-        verify(taskService, times(1)).getAllFromDesk(any(Desk.class), any(Pageable.class));
+        verify(taskService, times(1)).getAllFromDeskById(anyLong(), any(Pageable.class));
         verify(taskMapper, times(2)).taskToTaskDto(any(Task.class));
 
         assertEquals(List.of(TestConstants.getTaskDtoWithDesk(), TestConstants.getTaskDtoWithDesk()),
@@ -150,15 +134,20 @@ public class TasksInDeskServiceImplTest {
     @Test
     public void updateTask() {
         TaskDto defaultTask = TestConstants.getTaskDtoWithoutDesk();
+        Task task = TestConstants.getTaskWithoutDesk();
+        Long taskId = task.getId();
 
-        when(taskMapper.taskDtoToTask(any(TaskDto.class)))
-                .thenReturn(TestConstants.getTaskWithoutDesk());
+        when(taskService.getById(taskId))
+              .thenReturn(task);
         when(taskService.update(any(Task.class)))
                 .thenAnswer(i -> i.getArguments()[0]);
 
-        tasksInDeskService.updateTask(TestConstants.getTaskWithoutDesk().getId(), defaultTask);
+        tasksInDeskService.updateTask(taskId, defaultTask);
 
-        verify(taskMapper, times(1)).taskDtoToTask(any(TaskDto.class));
         verify(taskService, times(1)).update(any(Task.class));
+
+        assertEquals(defaultTask.getTitle(), task.getTitle());
+        assertEquals(defaultTask.getDescription(), task.getDescription());
+        assertEquals(defaultTask.getReqResolutionDate(), task.getReqResolutionDate());
     }
 }
