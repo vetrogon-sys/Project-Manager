@@ -8,11 +8,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface DeskMapper {
 
-    @Mapping(target = "tasks", ignore = true)
     Desk deskDtoToDesk(DeskDto deskDto);
 
-
-    @Mapping(target = "tasks", ignore = true)
     DeskDto deskToDeskDto(Desk desk);
 
 }
