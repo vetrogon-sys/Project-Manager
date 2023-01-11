@@ -20,20 +20,17 @@ public class DeskDto {
 
     private List<TaskDto> tasks;
 
-    private ProjectDto project;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DeskDto deskDto = (DeskDto) o;
         return Objects.equals(id, deskDto.id) &&
-                Objects.equals(name, deskDto.name) &&
-                Objects.equals(project, deskDto.project);
+                Objects.equals(name, deskDto.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, project);
+        return Objects.hash(id, name);
     }
 }
