@@ -10,6 +10,7 @@ import com.example.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,18 +24,21 @@ public class DesksInProjectServiceImpl implements DesksInProjectService {
 
     @Override
     public List<DeskDto> getAllDesksFromProjectById(Long projectId) {
+        if (!projectService.existById(projectId)) {
+            throw new EntityNotFoundException(String.format("Can't create Desk in project with id: %d because it doesn't exist", projectId));
+        }
         return deskService.getAllByProjectIdEquals(projectId).stream()
               .map(deskMapper::deskToDeskDto)
               .collect(Collectors.toList());
     }
 
     @Override
-    public void createDeskInProject(Long projectId, DeskDto deskDto) {
+    public DeskDto createDeskInProject(Long projectId, DeskDto deskDto) {
         Project project = projectService.getById(projectId);
 
         Desk desk = deskMapper.deskDtoToDesk(deskDto);
         desk.setProject(project);
-        deskService.create(desk);
+        return deskMapper.deskToDeskDto(deskService.create(desk));
     }
 
     @Override

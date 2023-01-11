@@ -8,7 +8,7 @@ public interface DesksInProjectService {
 
     List<DeskDto> getAllDesksFromProjectById(Long projectId);
 
-    void createDeskInProject(Long projectId, DeskDto deskDto);
+    DeskDto createDeskInProject(Long projectId, DeskDto deskDto);
 
     void deleteDeskById(Long deskId);
 

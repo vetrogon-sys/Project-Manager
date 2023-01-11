@@ -40,4 +40,9 @@ public class ProjectServiceImpl implements ProjectService {
         }
         projectRepository.deleteById(projectId);
     }
+
+    @Override
+    public boolean existById(Long projectId) {
+        return projectRepository.existsById(projectId);
+    }
 }

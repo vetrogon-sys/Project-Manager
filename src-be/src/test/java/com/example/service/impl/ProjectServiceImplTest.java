@@ -14,6 +14,8 @@ import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
@@ -126,6 +128,32 @@ public class ProjectServiceImplTest {
 
         verify(projectRepository, times(1)).existsById(projectId);
         verify(projectRepository, times(0)).deleteById(projectId);
+    }
+
+    @Test
+    public void existByIdIfExist() {
+        long projectId = 1L;
+
+        when(projectRepository.existsById(projectId))
+              .thenReturn(true);
+
+        boolean actual = projectService.existById(projectId);
+
+        verify(projectRepository, times(1)).existsById(projectId);
+        assertTrue(actual);
+    }
+
+    @Test
+    public void existByIdIfDoesNotExist() {
+        long projectId = 1L;
+
+        when(projectRepository.existsById(projectId))
+              .thenReturn(false);
+
+        boolean actual = projectService.existById(projectId);
+
+        verify(projectRepository, times(1)).existsById(projectId);
+        assertFalse(actual);
     }
 
 }
