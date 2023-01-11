@@ -88,7 +88,6 @@ public class TestConstants {
         task.setId(1L);
         task.setTitle("Testing task");
         task.setCreationDate(LocalDate.of(2010, 11, 12));
-        task.setDesk(getDeskDto());
         return task;
     }
 

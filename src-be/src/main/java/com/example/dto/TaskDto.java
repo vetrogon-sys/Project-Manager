@@ -31,8 +31,6 @@ public class TaskDto {
 
     private UserDto assignedUser;
 
-    private DeskDto desk;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -42,12 +40,11 @@ public class TaskDto {
                 Objects.equals(title, taskDto.title) &&
                 Objects.equals(description, taskDto.description) &&
                 Objects.equals(creationDate, taskDto.creationDate) &&
-                Objects.equals(reqResolutionDate, taskDto.reqResolutionDate) &&
-                Objects.equals(desk, taskDto.desk);
+                Objects.equals(reqResolutionDate, taskDto.reqResolutionDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, description, creationDate, reqResolutionDate, desk);
+        return Objects.hash(id, title, description, creationDate, reqResolutionDate);
     }
 }
