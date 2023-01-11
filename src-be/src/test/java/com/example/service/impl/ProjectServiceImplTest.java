@@ -1,7 +1,9 @@
 package com.example.service.impl;
 
 import com.example.constants.TestConstants;
+import com.example.dto.ProjectDto;
 import com.example.entity.Project;
+import com.example.mapper.ProjectMapper;
 import com.example.repository.ProjectRepository;
 import com.example.service.ProjectService;
 import org.junit.Before;
@@ -29,11 +31,14 @@ public class ProjectServiceImplTest {
     @Mock
     private ProjectRepository projectRepository;
 
+    @Mock
+    private ProjectMapper projectMapper;
+
     private ProjectService projectService;
 
     @Before
     public void setUp() {
-        projectService = new ProjectServiceImpl(projectRepository);
+        projectService = new ProjectServiceImpl(projectRepository, projectMapper);
     }
 
     @Test
@@ -61,33 +66,59 @@ public class ProjectServiceImplTest {
     }
 
     @Test
+    public void getByIdAsDtoIfProjectExist() {
+        long projectId = 1L;
+        Project project = TestConstants.getProjectWithId(projectId);
+        ProjectDto projectDto = TestConstants.getProjectDtoWithoutId();
+
+        when(projectRepository.findById(projectId))
+              .thenReturn(Optional.of(project));
+        when(projectMapper.projectToProjectDto(project))
+              .thenReturn(projectDto);
+
+        ProjectDto actualProject = projectService.getByIdAsDto(projectId);
+
+        verify(projectRepository, times(1)).findById(projectId);
+        verify(projectMapper, times(1)).projectToProjectDto(project);
+        assertEquals(projectDto, actualProject);
+    }
+
+
+    @Test
     public void create() {
         Project projectWithoutId = TestConstants.getProjectWithoutId();
+        ProjectDto projectDtoWithoutId = TestConstants.getProjectDtoWithoutId();
 
         when(projectRepository.save(projectWithoutId))
               .thenAnswer(i -> i.getArguments()[0]);
+        when(projectMapper.projectToProjectDto(any(Project.class)))
+              .thenReturn(projectDtoWithoutId);
 
-        Project actualProject = projectService.create(projectWithoutId);
+        ProjectDto actualProject = projectService.create(projectWithoutId);
 
         verify(projectRepository, times(1)).save(projectWithoutId);
-        assertEquals(projectWithoutId, actualProject);
+        verify(projectMapper, times(1)).projectToProjectDto(any(Project.class));
+        assertEquals(projectDtoWithoutId, actualProject);
     }
 
     @Test
     public void updateIfProjectExist() {
         long projectId = 1L;
         Project project = TestConstants.getProjectWithId(projectId);
+        ProjectDto projectDto = TestConstants.getProjectDtoWithoutId();
 
         when(projectRepository.existsById(projectId))
               .thenReturn(true);
         when(projectRepository.save(project))
               .thenAnswer(i -> i.getArguments()[0]);
+        when(projectMapper.projectToProjectDto(any(Project.class)))
+              .thenReturn(projectDto);
 
-        Project actualProject = projectService.update(project);
+        ProjectDto actualProject = projectService.update(project);
 
         verify(projectRepository, times(1)).existsById(projectId);
         verify(projectRepository, times(1)).save(project);
-        assertEquals(project, actualProject);
+        assertEquals(projectDto, actualProject);
     }
 
     @Test(expected = EntityNotFoundException.class)
