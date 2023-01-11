@@ -51,7 +51,6 @@
             <version>${spring-boot-starter-validation.version}</version>
         </dependency>
 
-
         <!--To integration tests-->
         <dependency>
             <groupId>com.h2database</groupId>
