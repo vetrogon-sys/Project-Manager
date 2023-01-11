@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,7 +18,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,7 +33,9 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name", length = 125)
     private String name;
+    @Column(name = "description", length = 512)
     private String description;
 
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "project")
@@ -48,13 +50,6 @@ public class Project {
             joinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
     private List<User> assignedUsers;
-
-    public void addDesk(Desk desk) {
-        if (Objects.isNull(desks)) {
-            desks = new ArrayList<>();
-        }
-        desks.add(desk);
-    }
 
     @Override
     public boolean equals(Object o) {
