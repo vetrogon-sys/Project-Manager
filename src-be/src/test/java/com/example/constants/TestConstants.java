@@ -58,6 +58,24 @@ public class TestConstants {
         );
     }
 
+    public static List<DeskDto> getDeskDtoListWith() {
+        DeskDto d1 = new DeskDto();
+        d1.setId(1L);
+        d1.setName("Desk 1");
+        DeskDto d2 = new DeskDto();
+        d2.setId(2L);
+        d2.setName("Desk 2");
+        DeskDto d3 = new DeskDto();
+        d3.setId(3L);
+        d3.setName("Desk 3");
+
+        return new ArrayList<>(
+              List.of(
+                    d1, d2, d3
+              )
+        );
+    }
+
     public static DeskDto getDeskDto() {
         DeskDto desk = new DeskDto();
         desk.setId(1L);
@@ -134,4 +152,12 @@ public class TestConstants {
         project.setCreator(getUserEqualsToExisting());
         return project;
     }
+
+    public static Project getProjectWithoutId() {
+        Project project = new Project();
+        project.setName("Test project");
+        project.setCreator(getUserEqualsToExisting());
+        return project;
+    }
+
 }
