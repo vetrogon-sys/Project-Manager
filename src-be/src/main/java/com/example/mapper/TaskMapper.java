@@ -12,13 +12,13 @@ public interface TaskMapper {
 
     @Mappings({
             @Mapping(target = "desk.tasks", ignore = true),
-            @Mapping(target = "desk.project", ignore = true),
+            @Mapping(target = "desk.project", ignore = true)
     })
     Task taskDtoToTask(TaskDto taskDto);
 
     @Mappings({
             @Mapping(target = "desk", ignore = true),
-            @Mapping(target = "assignedUser", ignore = true),
+            @Mapping(target = "assignedUser", ignore = true)
     })
     TaskDto taskToTaskDto(Task task);
 
