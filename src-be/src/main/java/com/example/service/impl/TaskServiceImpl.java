@@ -29,6 +29,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public Task getById(Long taskId) {
+        return taskRepository.findById(taskId)
+              .orElseThrow(() -> new EntityNotFoundException(String.format("Can't find Task with id: %d", taskId)));
+    }
+
+    @Override
     public void deleteById(Long id) {
         if (!taskRepository.existsById(id)) {
             throw new EntityNotFoundException(String.format("Task with id: %d doesn't exist", id));
