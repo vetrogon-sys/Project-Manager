@@ -35,6 +35,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public void deleteById(Long projectId) {
+        if (!projectRepository.existsById(projectId)) {
+            throw new EntityNotFoundException(String.format("Can't delete Project with id: %d", projectId));
+        }
         projectRepository.deleteById(projectId);
     }
 }

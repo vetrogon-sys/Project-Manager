@@ -134,4 +134,12 @@ public class TestConstants {
         project.setCreator(getUserEqualsToExisting());
         return project;
     }
+
+    public static Project getProjectWithoutId() {
+        Project project = new Project();
+        project.setName("Test project");
+        project.setCreator(getUserEqualsToExisting());
+        return project;
+    }
+
 }
