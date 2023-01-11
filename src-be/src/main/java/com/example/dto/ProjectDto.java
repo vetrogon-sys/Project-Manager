@@ -19,8 +19,6 @@ public class ProjectDto {
     private String name;
     private String description;
 
-    private List<DeskDto> desks;
-
     private UserDto creator;
 
     private List<UserDto> assignedUsers;
