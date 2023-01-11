@@ -1,12 +1,13 @@
 package com.example.entity;
 
+import com.example.dto.TaskDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.DynamicUpdate;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -23,7 +24,6 @@ import java.util.Objects;
 
 @Table(name = "tasks")
 @Entity
-@DynamicUpdate
 @Getter
 @Setter
 @Builder
@@ -46,11 +46,11 @@ public class Task {
     private LocalDate creationDate;
     private LocalDate reqResolutionDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "assigned_id", referencedColumnName = "id")
     private User assignedUser;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE})
     @JoinColumn(name = "desk_id", nullable = false, referencedColumnName = "id")
     private Desk desk;
 
@@ -71,4 +71,11 @@ public class Task {
     public int hashCode() {
         return Objects.hash(id, title, description, creationDate, reqResolutionDate, desk);
     }
+
+    public void fillRequiredFields(TaskDto from) {
+        this.setTitle(from.getTitle());
+        this.setDescription(from.getDescription());
+        this.setReqResolutionDate(from.getReqResolutionDate());
+    }
+
 }

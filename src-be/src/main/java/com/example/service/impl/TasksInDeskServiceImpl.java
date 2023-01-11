@@ -23,13 +23,11 @@ public class TasksInDeskServiceImpl implements TasksInDeskService {
 
     @Override
     public TaskDto createTaskInDesk(Long deskId, TaskDto taskDto) {
-        Desk desk = deskService.getByIdWithTasks(deskId);
+        Desk desk = deskService.getById(deskId);
 
         Task task = taskMapper.taskDtoToTask(taskDto);
         task.setDesk(desk);
         Task createdTask = taskService.create(task);
-
-        deskService.addTaskToDeskById(deskId, task);
 
         return taskMapper.taskToTaskDto(createdTask);
     }
@@ -38,9 +36,7 @@ public class TasksInDeskServiceImpl implements TasksInDeskService {
     @Transactional
     public void moveTaskToAnotherDesk(Long taskId, Long currentDeskId, Long anotherDeskId) {
         Task task = taskService.getByIdWithDesk(taskId);
-
-        deskService.deleteTaskInDeskById(currentDeskId, task);
-        Desk anotherDesk = deskService.addTaskToDeskById(anotherDeskId, task);
+        Desk anotherDesk = deskService.getById(anotherDeskId);
 
         task.setDesk(anotherDesk);
         taskService.update(task);
@@ -48,10 +44,6 @@ public class TasksInDeskServiceImpl implements TasksInDeskService {
 
     @Override
     public void deleteTaskInDesk(Long deskId, Long taskId) {
-        Task task = taskService.getByIdWithDesk(taskId);
-
-        deskService.deleteTaskInDeskById(deskId, task);
-
         taskService.deleteById(taskId);
     }
 
@@ -63,10 +55,10 @@ public class TasksInDeskServiceImpl implements TasksInDeskService {
 
     @Override
     public void updateTask(Long taskId, TaskDto taskDto) {
-        Task updatedTask = taskMapper.taskDtoToTask(taskDto);
-        updatedTask.setId(taskId);
+        Task oldTask = taskService.getById(taskId);
+        oldTask.fillRequiredFields(taskDto);
 
-        taskService.update(updatedTask);
+        taskService.update(oldTask);
     }
 
 }

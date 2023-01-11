@@ -11,6 +11,8 @@ public interface TaskService {
 
     Task getByIdWithDesk(Long taskId);
 
+    Task getById(Long taskId);
+
     void deleteById(Long id);
 
     Task update(Task task);
