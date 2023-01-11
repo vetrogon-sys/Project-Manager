@@ -1,6 +1,8 @@
 package com.example.service.impl;
 
+import com.example.dto.ProjectDto;
 import com.example.entity.Project;
+import com.example.mapper.ProjectMapper;
 import com.example.repository.ProjectRepository;
 import com.example.service.ProjectService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import javax.persistence.EntityNotFoundException;
 public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final ProjectMapper projectMapper;
 
     @Override
     public Project getById(Long projectId) {
@@ -21,16 +24,21 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Project create(Project project) {
-        return projectRepository.save(project);
+    public ProjectDto getByIdAsDto(Long projectId) {
+        return projectMapper.projectToProjectDto(getById(projectId));
     }
 
     @Override
-    public Project update(Project project) {
+    public ProjectDto create(Project project) {
+        return projectMapper.projectToProjectDto(projectRepository.save(project));
+    }
+
+    @Override
+    public ProjectDto update(Project project) {
         if (!projectRepository.existsById(project.getId())) {
             throw new EntityNotFoundException(String.format("Can't update Project with id: %d", project.getId()));
         }
-        return projectRepository.save(project);
+        return projectMapper.projectToProjectDto(projectRepository.save(project));
     }
 
     @Override

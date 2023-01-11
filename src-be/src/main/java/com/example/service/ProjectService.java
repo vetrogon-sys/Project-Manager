@@ -1,14 +1,17 @@
 package com.example.service;
 
+import com.example.dto.ProjectDto;
 import com.example.entity.Project;
 
 public interface ProjectService {
 
     Project getById(Long projectId);
 
-    Project create(Project project);
+    ProjectDto getByIdAsDto(Long projectId);
 
-    Project update(Project project);
+    ProjectDto create(Project project);
+
+    ProjectDto update(Project project);
 
     void deleteById(Long projectId);
 
