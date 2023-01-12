@@ -83,7 +83,7 @@ public class JwtTokenProvider implements TokenProvider {
             throw new ExpiredTokenException("JWT token is expire. Need to reload authentication");
         } catch (UnsupportedJwtException | MalformedJwtException
               | SignatureException | IllegalArgumentException ex) {
-            throw new WrongAuthenticationTokenException("JWT token is invalid.");
+            return false;
         }
     }
 

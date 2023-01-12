@@ -1,5 +1,7 @@
 package com.example.security.config;
 
+import com.example.security.service.TokenProvider;
+import com.example.security.web.filter.JwtTokenFilterConfigurer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +22,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class WebSecurityConfiguration {
 
+    private final TokenProvider tokenProvider;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -35,6 +39,8 @@ public class WebSecurityConfiguration {
               .antMatchers("/users/signin").permitAll()
               .antMatchers("/users/signup").permitAll()
               .anyRequest().authenticated();
+
+        http.apply(new JwtTokenFilterConfigurer(tokenProvider));
 
         return http.build();
     }
