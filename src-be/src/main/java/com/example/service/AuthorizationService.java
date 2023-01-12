@@ -1,14 +1,15 @@
 package com.example.service;
 
 import com.example.dto.AuthorizationDto;
+import com.example.dto.JWTTokenDto;
 import com.example.dto.RegistrationDto;
 
 public interface AuthorizationService {
 
-    String signIn(AuthorizationDto authorizationDto);
+    JWTTokenDto signIn(AuthorizationDto authorizationDto);
 
-    String signUp(RegistrationDto registrationDto);
+    JWTTokenDto signUp(RegistrationDto registrationDto);
 
-    String refreshAuthentication(String email);
+    JWTTokenDto refreshAuthentication(String email);
 
 }

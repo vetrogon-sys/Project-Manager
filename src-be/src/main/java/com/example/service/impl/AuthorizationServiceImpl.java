@@ -1,6 +1,7 @@
 package com.example.service.impl;
 
 import com.example.dto.AuthorizationDto;
+import com.example.dto.JWTTokenDto;
 import com.example.dto.RegistrationDto;
 import com.example.entity.User;
 import com.example.exeptions.InvalidCredentialsException;
@@ -23,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthorizationServiceImpl implements AuthorizationService {
 
+    public static final SimpleGrantedAuthority DEFAULT_USER_ROLE_AUTHORITY = new SimpleGrantedAuthority("ROLE_USER");
     private final UserService userService;
     private final TokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
@@ -30,7 +32,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public String signIn(AuthorizationDto authorizationDto) {
+    public JWTTokenDto signIn(AuthorizationDto authorizationDto) {
         try {
             String email = authorizationDto.getEmail();
             Authentication authentication
@@ -39,14 +41,14 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                   authorizationDto.getPassword()
             );
             authenticationManager.authenticate(authentication);
-            return tokenProvider.createToken(email, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+            return new JWTTokenDto(tokenProvider.createToken(email, List.of(DEFAULT_USER_ROLE_AUTHORITY)));
         } catch (AuthenticationException e) {
             throw new InvalidCredentialsException("Authentication exception. Check passed credentials");
         }
     }
 
     @Override
-    public String signUp(RegistrationDto registrationDto) {
+    public JWTTokenDto signUp(RegistrationDto registrationDto) {
         String email = registrationDto.getEmail();
         if (userService.isUserWithEmailExist(email)) {
             throw new InvalidCredentialsException(String.format("User with email: %s already exist", email));
@@ -56,12 +58,12 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
         userService.save(user);
 
-        return tokenProvider.createToken(user.getEmail(), List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        return new JWTTokenDto(tokenProvider.createToken(user.getEmail(), List.of(DEFAULT_USER_ROLE_AUTHORITY)));
     }
 
     @Override
-    public String refreshAuthentication(String email) {
-        return tokenProvider.createToken(email, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+    public JWTTokenDto refreshAuthentication(String email) {
+        return new JWTTokenDto(tokenProvider.createToken(email, List.of(DEFAULT_USER_ROLE_AUTHORITY)));
     }
 
 }
