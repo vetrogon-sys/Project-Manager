@@ -28,4 +28,14 @@ public class UserServiceImpl implements UserService {
         return userMapper.userToUserDto(getByEmail(email));
     }
 
+    @Override
+    public User save(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
+    public boolean isUserWithEmailExist(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
 }

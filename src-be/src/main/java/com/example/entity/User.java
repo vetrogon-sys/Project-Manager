@@ -30,7 +30,7 @@ public class User {
     private Long id;
     @Column(name = "email", unique = true)
     private String email;
-    @Column(name = "email", unique = true)
+    @Column(name = "password", unique = true, length = 512)
     private String password;
     @Column(name = "first_name", length = 30)
     private String firstName;
