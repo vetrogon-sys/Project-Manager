@@ -30,6 +30,8 @@ public class User {
     private Long id;
     @Column(name = "email", unique = true)
     private String email;
+    @Column(name = "password", unique = true, length = 512)
+    private String password;
     @Column(name = "first_name", length = 30)
     private String firstName;
     @Column(name = "last_name", length = 30)
@@ -48,13 +50,14 @@ public class User {
         User user = (User) o;
         return Objects.equals(id, user.id) &&
                 Objects.equals(email, user.email) &&
+                Objects.equals(password, user.password) &&
                 Objects.equals(firstName, user.firstName) &&
                 Objects.equals(lastName, user.lastName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, firstName, lastName);
+        return Objects.hash(id, email, password, firstName, lastName);
     }
 
 }

@@ -1,8 +1,8 @@
 INSERT INTO
-    USERS (id, email, first_name, last_name)
+    USERS (id, email, password, first_name, last_name)
 VALUES
-    (1, 'admin@yopmail.com', 'Adam', 'Green'),
-    (2, 'user@yopmail.com', 'Igor', 'Black');
+    (1, 'admin@yopmail.com', '$2a$12$dhhXme1dEcXG2zwGyV9GsO9K7svbOhd8Khc.i9vMmLMZoih7yqgqW', 'Adam', 'Green'),
+    (2, 'user@yopmail.com', '$2a$12$dhhXme1dEcXG2zwGyV9GsO9K7svbOhd8Khc.i9vMmLMZoih7yqgqW', 'Igor', 'Black');
 
 INSERT INTO
     PROJECTS (id, name, creator_id)
