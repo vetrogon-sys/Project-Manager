@@ -2,6 +2,24 @@
 
 # Start project
 
+## Start project in production mode
+
+- fill `.env` file with data </br>
+  `.env` example:
+  ```
+   POSTGRES_USER=user
+   POSTGRES_PASSWORD=admin
+   POSTGRES_DB=project-manager
+   PGADMIN_DEFAULT_EMAIL=admin@admin.com
+   PGADMIN_DEFAULT_PASSWORD=admin
+   JWT_TOKEN_SECRET=secret-key
+   JWT_TOKEN_VALIDITY_IN_MILLISECONDS=3000
+  ```
+- from project root directory start database container. </br>`docker-compose up postgresdb`
+- After container build run remaining containers. </br>`docker-compose up`
+
+## Start project for development
+
 - Start PostgreSQL From Docker:
   -
     - fill `.env` file with data
@@ -21,10 +39,8 @@
   ```
 
 - Start SpringBoot back-end application
-    - ~~Start application from docker~~
-      -
-        - Coming soon
-
+    -
+    
     - Start application from IntellijIDEA
       -
         - open `./src-be` folder as IntellijIDEA project
