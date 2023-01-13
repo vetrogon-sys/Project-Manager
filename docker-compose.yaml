@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  db:
+  postgresdb:
     image: postgres
     container_name: postgresdb
     restart: always
@@ -27,6 +27,25 @@ services:
       PGADMIN_DEFAULT_PASSWORD: '${PGADMIN_DEFAULT_PASSWORD}'
     volumes:
       - pgadmin-data:/var/lib/pgadmin
+
+  pm-be:
+    image: 'docker-spring-boot-postgres:latest'
+    container_name: pm-be
+    build: ./src-be/
+    ports:
+      - 8080:8081
+    restart: on-failure
+    environment:
+      POSTGRES_PORT: '5432'
+      POSTGRES_USER: '${POSTGRES_USER}'
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
+      POSTGRES_DB: '${POSTGRES_DB}'
+      JWT_TOKEN_SECRET: '${JWT_TOKEN_SECRET}'
+      JWT_TOKEN_VALIDITY_IN_MILLISECONDS: '${JWT_TOKEN_VALIDITY_IN_MILLISECONDS}'
+    volumes:
+      - .m2:/root/.m2
+    depends_on:
+      - postgresdb
 
 volumes:
   local_pgdata:
