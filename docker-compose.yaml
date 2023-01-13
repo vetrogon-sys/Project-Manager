@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  postgresdb:
+    image: postgres
+    container_name: postgresdb
+    restart: always
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: '${POSTGRES_USER}'
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
+      POSTGRES_DB: '${POSTGRES_DB}'
+    volumes:
+      - local_pgdata:/var/lib/postgresql/data
+      - ./postgres-init/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - ./postgres-init/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - '5050:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: '${PGADMIN_DEFAULT_EMAIL}'
+      PGADMIN_DEFAULT_PASSWORD: '${PGADMIN_DEFAULT_PASSWORD}'
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+  pm-be:
+    image: 'docker-spring-boot-postgres:latest'
+    container_name: pm-be
+    build: ./src-be/
+    ports:
+      - 8080:8081
+    restart: on-failure
+    environment:
+      POSTGRES_PORT: '5432'
+      POSTGRES_USER: '${POSTGRES_USER}'
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
+      POSTGRES_DB: '${POSTGRES_DB}'
+      JWT_TOKEN_SECRET: '${JWT_TOKEN_SECRET}'
+      JWT_TOKEN_VALIDITY_IN_MILLISECONDS: '${JWT_TOKEN_VALIDITY_IN_MILLISECONDS}'
+    volumes:
+      - .m2:/root/.m2
+    depends_on:
+      - postgresdb
+
+volumes:
+  local_pgdata:
+  pgadmin-data:

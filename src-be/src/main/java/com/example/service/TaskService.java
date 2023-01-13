@@ -11,10 +11,14 @@ public interface TaskService {
 
     Task getByIdWithDesk(Long taskId);
 
+    Task getById(Long taskId);
+
     void deleteById(Long id);
 
     Task update(Task task);
 
     Page<Task> getAllFromDesk(Desk desk, Pageable pageable);
+
+    Page<Task> getAllFromDeskById(Long deskId, Pageable pageable);
 
 }

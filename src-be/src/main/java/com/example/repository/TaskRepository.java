@@ -15,6 +15,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     Page<Task> findAllByDesk(Desk desk, Pageable pageable);
 
+    Page<Task> findAllByDeskIdEquals(Long deskId, Pageable pageable);
+
     @EntityGraph(value = "task-with-desk")
     Optional<Task> findWithDeskById(Long aLong);
 

@@ -9,4 +9,8 @@ public interface UserService {
 
     UserDto getUserByEmailAsDto(String email);
 
+    User save(User user);
+
+    boolean isUserWithEmailExist(String email);
+
 }

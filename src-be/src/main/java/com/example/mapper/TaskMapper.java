@@ -3,14 +3,17 @@ package com.example.mapper;
 
 import com.example.dto.TaskDto;
 import com.example.entity.Task;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
+@Mapper(componentModel = "spring")
 public interface TaskMapper {
 
-    TaskMapper INSTANCE = Mappers.getMapper(TaskMapper.class);
-
+    @Mapping(target = "assignedUser", ignore = true)
+    @Mapping(target = "desk", ignore = true)
     Task taskDtoToTask(TaskDto taskDto);
 
+    @Mapping(target = "assignedUser", ignore = true)
     TaskDto taskToTaskDto(Task task);
 
 }

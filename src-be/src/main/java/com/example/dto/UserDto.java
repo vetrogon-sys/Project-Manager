@@ -19,10 +19,6 @@ public class UserDto {
     private String firstName;
     private String lastName;
 
-    private List<ProjectDto> ownProjects;
-
-    private List<ProjectDto> assignedProjects;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
