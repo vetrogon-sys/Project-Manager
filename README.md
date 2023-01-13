@@ -40,33 +40,32 @@
 
 - Start SpringBoot back-end application
     -
-    
+
+    - in `src-be/src/main/resources/application-local.properties` file 
+      fill required fields with data from `.env` file </br> Example:
+      ```
+      postgres.port=5433
+      postgres.db.name=project-manager
+      postgres.username=user
+      postgres.password=admin
+      security.jwt.token.secret-key=secret-key
+      security.jwt.token.expire-length=3000
+      ```
+
     - Start application from IntellijIDEA
       -
         - open `./src-be` folder as IntellijIDEA project
-        - configure Build of application for it:
+        - configure *'Profiles'* of application for it:
             - open *'edit configurations...'* menu
             - create new configuration with type *'Application'*
-            - in *'main class'* input string
-              select `src/main/java/com/example/ProjectManagerApplication.java`
-            - enable `.env` files and add a path to `./.env` file in project root
+            - choose `src/main/java/com/example/ProjectManagerApplication.java` as *'main class'*
             - activate *'local'* profile for it in VM options menu add following option:</br>
               `-Dspring.profiles.active=local`
         - run configured application
 
     - Start application as maven project
       -
-        - in `./src-be/src/main/resources/application.properties` file `.env` data with values
-          from `.env` file </br>
-          For example:
-           ```
-           postgres.db.name=project-manager
-           postgres.username=user
-           postgres.password=admin
-           security.jwt.token.secret-key=secret-key
-           security.jwt.token.expire-length=3000
-           ```
-        - return to `./src-be` directory
+        - open `./src-be` directory
         - open command line
         - run `mvn spring-boot:run -Dspring.profiles.active=local` command
 
