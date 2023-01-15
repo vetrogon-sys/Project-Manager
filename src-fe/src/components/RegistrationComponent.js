@@ -23,11 +23,35 @@ async function authorize(registrationData, setIsLoading, setErrors) {
     setIsLoading(false);
     if (response.status === 200) {
         authStorage().saveToken(response.data.token);
-        window.location.href='/'
+        window.location.href = '/'
     } else {
         console.log(response)
         setErrors(new Map(Object.entries(response.data.errors)));
     }
+}
+
+function getRegistrationDataErrors(registrationData) {
+    const emailRegExp = new RegExp('[a-z0-9]+@[a-z]+\\.[a-z]{2,3}');
+
+    var errorMap = new Map();
+    if (!emailRegExp.test(registrationData.email)) {
+        errorMap.set('email', 'Invalid email');
+    }
+
+    const userInfoRegExp = new RegExp('^[a-zA-Z]{2,60}$');
+    if (!userInfoRegExp.test(registrationData.firstName)) {
+        errorMap.set('firstName', 'First name must not be blank');
+    }
+    if (!userInfoRegExp.test(registrationData.lastName)) {
+        errorMap.set('lastName', 'Last name must not be blank');
+    }
+
+    const passwordRegExp = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$");
+    if (!passwordRegExp.test(registrationData.password)) {
+        errorMap.set('password', 'Password must be minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character');
+    }
+
+    return errorMap;
 }
 
 export default function RegistrationComponent() {
@@ -41,17 +65,23 @@ export default function RegistrationComponent() {
 
     const callAuth = () => {
         if (password === passwordRepeat) {
+
             const registrationData = {
                 email: email,
                 password: password,
                 lastName: lastName,
                 firstName: firstName
             }
-    
-            authorize(registrationData, setLoading, setErrors);
-            
+
+            const errMap = getRegistrationDataErrors(registrationData);
+            if (errMap.size === 0) {
+                authorize(registrationData, setLoading, setErrors);
+            } else {
+                setErrors(new Map(errMap));
+            }
+
         } else {
-            errors.set('password', 'Passwords does`t match');
+            setErrors(new Map(errors.set('passwordR', 'Passwords does`t match')));
         }
     }
 
@@ -66,7 +96,7 @@ export default function RegistrationComponent() {
             <Box
                 sx={{
                     width: '25rem',
-                    height: '35rem',
+                    height: '32rem' + errors.size * .75,
                     boxShadow: 4,
                     padding: '.5rem'
                 }}>
@@ -90,12 +120,11 @@ export default function RegistrationComponent() {
                         Hello in ProjectManager
                     </Typography>
                 </FormControl>
-                {console.log(errors)}
-                {input().defaultTextInput('Email', setEmail, errors.get('email'))}
-                {input().securedTextInput('Password', setPassword, errors.get('error'))}
-                {input().securedTextInput('Repeat password', setPasswordRepeat, errors.get('password'))}
-                {input().defaultTextInput('First Name', setFirstName, errors.get('email'))}
-                {input().defaultTextInput('Last Name', setLastName, errors.get('email'))}
+                {input().defaultTextInput('Email', setEmail, errors.get(errors.get('email') ? 'email' : 'errors'))}
+                {input().securedTextInput('Password', setPassword, errors.get('password'))}
+                {input().securedTextInput('Repeat password', setPasswordRepeat, errors.get('passwordR'))}
+                {input().defaultTextInput('First Name', setFirstName, errors.get('firstName'))}
+                {input().defaultTextInput('Last Name', setLastName, errors.get('lastName'))}
                 <FormControl sx={{ m: 1, width: '40ch' }} variant="outlined">
                     <Button variant="contained" onClick={callAuth}>
                         Sign on
