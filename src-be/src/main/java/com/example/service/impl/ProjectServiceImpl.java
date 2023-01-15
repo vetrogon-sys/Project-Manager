@@ -6,9 +6,12 @@ import com.example.mapper.ProjectMapper;
 import com.example.repository.ProjectRepository;
 import com.example.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +42,20 @@ public class ProjectServiceImpl implements ProjectService {
             throw new EntityNotFoundException(String.format("Can't update Project with id: %d", project.getId()));
         }
         return projectMapper.projectToProjectDto(projectRepository.save(project));
+    }
+
+    @Override
+    public List<ProjectDto> getAllWhereUserWithEmailIsCreator(String email, Pageable pageable) {
+        return projectRepository.findAllByCreatorEmailEquals(email, pageable).stream()
+              .map(projectMapper::projectToProjectDto)
+              .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProjectDto> getAllWhereUserWithEmailIsAssigned(String email, Pageable pageable) {
+        return projectRepository.findAllByAssignedUsersEmailEquals(email, pageable).stream()
+              .map(projectMapper::projectToProjectDto)
+              .collect(Collectors.toList());
     }
 
     @Override

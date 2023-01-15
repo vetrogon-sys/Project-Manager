@@ -2,6 +2,9 @@ package com.example.service;
 
 import com.example.dto.ProjectDto;
 import com.example.entity.Project;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface ProjectService {
 
@@ -12,6 +15,10 @@ public interface ProjectService {
     ProjectDto create(Project project);
 
     ProjectDto update(Project project);
+
+    List<ProjectDto> getAllWhereUserWithEmailIsCreator(String email, Pageable pageable);
+
+    List<ProjectDto> getAllWhereUserWithEmailIsAssigned(String email, Pageable pageable);
 
     void deleteById(Long projectId);
 
