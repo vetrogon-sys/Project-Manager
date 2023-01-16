@@ -1,33 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet } from "react-router-dom";
-import auth from '../services/AuthorizationService';
-import authStorage from '../storage/AuthenticationTokenStorage';
+import auth from '../../services/AuthorizationService';
+import authStorage from '../../storage/AuthenticationTokenStorage';
 import { Box, FormControl, Typography, Button, Link, Backdrop, CircularProgress } from '@mui/material';
-import input from "./input/TextFieldInputComponent";
-
-function getCredentialsErrors(registrationData) {
-    const emailRegExp = new RegExp('[a-z0-9]+@[a-z]+\\.[a-z]{2,3}');
-
-    var errorMap = new Map();
-    if (!emailRegExp.test(registrationData.email)) {
-        errorMap.set('email', 'Invalid email');
-    }
-
-    const userInfoRegExp = new RegExp('^[a-zA-Z]{2,60}$');
-    if (!userInfoRegExp.test(registrationData.firstName)) {
-        errorMap.set('firstName', 'First name must not be blank');
-    }
-    if (!userInfoRegExp.test(registrationData.lastName)) {
-        errorMap.set('lastName', 'Last name must not be blank');
-    }
-
-    const passwordRegExp = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$");
-    if (!passwordRegExp.test(registrationData.password)) {
-        errorMap.set('password', 'Password must be minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character');
-    }
-
-    return errorMap;
-}
+import input from "../input/TextFieldInputComponent";
 
 function sendtoapi(email, pass) {
     const credentials = {
@@ -63,6 +39,10 @@ export default function LoginComponent() {
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState(new Map());
     const [isLoading, setLoading] = useState(false);
+
+    useEffect(() => {
+        localStorage.removeItem('token');
+    })
 
     const callAuth = () => {
         const emailRegExp = new RegExp('[a-z0-9]+@[a-z]+\\.[a-z]{2,3}');

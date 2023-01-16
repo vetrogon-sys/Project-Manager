@@ -1,5 +1,5 @@
 import Axios from 'axios';
-import authStorage from '../storage/AuthenticationTokenStorage';
+import authStorage from '../../storage/AuthenticationTokenStorage';
 
 const instance = Axios.create();
 
@@ -7,7 +7,7 @@ instance.interceptors.response.use(function (response) {
     return response;
 }, function (error) {
 
-    if (error.code.status === 403) {
+    if (error.response.status === 403) {
         window.location.href = '/login'
     }
 
@@ -15,6 +15,8 @@ instance.interceptors.response.use(function (response) {
 });
 
 export default function HttpService() {
+    const baseApi = '/_api'
+
     const headers = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${authStorage().getToken()}`
@@ -22,7 +24,7 @@ export default function HttpService() {
 
     return {
         GET: function (url) {
-            return instance.get(url, { headers }).then(response => {
+            return instance.get(`${baseApi}url`, { headers }).then(response => {
                 return response;
             }).catch(err => {
                 throw err;

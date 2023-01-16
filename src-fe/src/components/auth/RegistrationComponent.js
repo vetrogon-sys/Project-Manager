@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet } from "react-router-dom";
-import auth from '../services/AuthorizationService';
-import authStorage from '../storage/AuthenticationTokenStorage';
+import auth from '../../services/AuthorizationService';
+import authStorage from '../../storage/AuthenticationTokenStorage';
 import { Box, FormControl, Typography, Button, Backdrop, CircularProgress, IconButton } from '@mui/material';
 import ArrowBack from "@mui/icons-material/ArrowBack";
-import input from "./input/TextFieldInputComponent";
+import input from "../input/TextFieldInputComponent";
 
 function sendtoapi(registrationData) {
     return auth().signUp(registrationData)
