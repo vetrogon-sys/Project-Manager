@@ -1,11 +1,9 @@
 package com.example.security.service.impl;
 
 import com.example.exeptions.ExpiredTokenException;
-import com.example.exeptions.WrongAuthenticationTokenException;
 import com.example.security.service.TokenProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
