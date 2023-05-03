@@ -6,8 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -18,20 +18,19 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Authority implements GrantedAuthority {
-    private static final String USER_VALUE = "user_";
-    private static final String PROJECT_VALUE = "_project_";
-
+public class Authority {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
+    @Column(length = 512, nullable = false)
+    private String value;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "authorities")
     private List<SecurityOpportunity> opportunities;
@@ -45,17 +44,6 @@ public class Authority implements GrantedAuthority {
     private Project relatedProject;
 
     @Override
-    public String getAuthority() {
-        return USER_VALUE
-              + assigned.getId()
-              + PROJECT_VALUE
-              + relatedProject.getId()
-              + opportunities.stream()
-              .map(SecurityOpportunity::getOpportunity)
-              .collect(Collectors.joining("_"));
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -64,7 +52,7 @@ public class Authority implements GrantedAuthority {
             return false;
         }
         Authority authority = (Authority) o;
-        return Objects.equals(id, authority.id)
+        return Objects.equals(id, authority.id) && Objects.equals(value, authority.value)
               && Objects.equals(opportunities, authority.opportunities)
               && Objects.equals(assigned, authority.assigned)
               && Objects.equals(relatedProject, authority.relatedProject);
@@ -72,6 +60,6 @@ public class Authority implements GrantedAuthority {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, opportunities, assigned, relatedProject);
+        return Objects.hash(id, value, opportunities, assigned, relatedProject);
     }
 }
