@@ -40,12 +40,7 @@ public class AuthorityRepositoryTest {
     @Test
     public void testFindBySignature() {
         Optional<Authority> actualAuthority = authorityRepository.findBySignature("user_1_project_1_Create_Delete");
-
-        SecurityOpportunity opportunity = new SecurityOpportunity();
-        opportunity.setOpportunity("Create");
-        SecurityOpportunity opportunity2 = new SecurityOpportunity();
-        opportunity2.setOpportunity("Delete");
-        List<SecurityOpportunity> expectedOpportunities = List.of(opportunity, opportunity2);
+        List<SecurityOpportunity> expectedOpportunities = TestConstants.getSecurityOpportunities();
 
         Assert.assertTrue(actualAuthority.isPresent());
         Assert.assertThat(actualAuthority.get().getId(), is(1L));
