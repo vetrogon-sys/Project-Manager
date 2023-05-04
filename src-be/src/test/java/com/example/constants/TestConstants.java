@@ -1,6 +1,7 @@
 package com.example.constants;
 
 import com.example.dto.DeskDto;
+import com.example.dto.ProjectDto;
 import com.example.dto.TaskDto;
 import com.example.dto.UserDto;
 import com.example.entity.Desk;

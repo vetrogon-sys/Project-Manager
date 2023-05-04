@@ -1,6 +1,7 @@
 package com.example.security.config;
 
 import com.example.security.service.TokenProvider;
+import com.example.security.web.filter.CustomAccessDeniedHandler;
 import com.example.security.web.filter.JwtTokenFilterConfigurer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -41,6 +42,10 @@ public class WebSecurityConfiguration {
               .antMatchers("/auth/signin").permitAll()
               .antMatchers("/auth/signup").permitAll()
               .anyRequest().authenticated();
+
+        http
+              .exceptionHandling()
+        .accessDeniedHandler(new CustomAccessDeniedHandler());
 
         http.apply(new JwtTokenFilterConfigurer(tokenProvider));
 

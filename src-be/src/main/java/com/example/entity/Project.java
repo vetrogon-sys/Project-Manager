@@ -38,7 +38,7 @@ public class Project {
     @Column(name = "description", length = 512)
     private String description;
 
-    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "project")
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "project")
     private List<Desk> desks;
 
     @ManyToOne(fetch = FetchType.LAZY)
