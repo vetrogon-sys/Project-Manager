@@ -8,7 +8,11 @@ instance.interceptors.response.use(function (response) {
 }, function (error) {
 
     if (error.response.status === 403) {
-        window.location.href = '/login'
+        authStorage().clearToken();
+        if (window.location.pathname !== '/login') {
+            window.location.href = '/login'
+        }
+        
     }
 
     return Promise.reject(error);
@@ -24,7 +28,7 @@ export default function HttpService() {
 
     return {
         GET: function (url) {
-            return instance.get(`${baseApi}url`, { headers }).then(response => {
+            return instance.get(`${baseApi}${url}`, { headers }).then(response => {
                 return response;
             }).catch(err => {
                 throw err;
