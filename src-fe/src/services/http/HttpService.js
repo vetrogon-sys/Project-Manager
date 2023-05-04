@@ -6,9 +6,9 @@ const instance = Axios.create();
 instance.interceptors.response.use(function (response) {
     return response;
 }, function (error) {
-
     if (error.response.status === 403) {
         authStorage().clearToken();
+        console.log(window.location.pathname)
         if (window.location.pathname !== '/login') {
             window.location.href = '/login'
         }
