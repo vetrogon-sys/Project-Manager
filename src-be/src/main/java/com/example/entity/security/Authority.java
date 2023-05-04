@@ -16,21 +16,23 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
+@Table(name = "authorities")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Authority {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(length = 512, nullable = false)
-    private String value;
+    private String signature;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "authorities")
     private List<SecurityOpportunity> opportunities;
@@ -52,14 +54,11 @@ public class Authority {
             return false;
         }
         Authority authority = (Authority) o;
-        return Objects.equals(id, authority.id) && Objects.equals(value, authority.value)
-              && Objects.equals(opportunities, authority.opportunities)
-              && Objects.equals(assigned, authority.assigned)
-              && Objects.equals(relatedProject, authority.relatedProject);
+        return Objects.equals(id, authority.id) && Objects.equals(signature, authority.signature);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, value, opportunities, assigned, relatedProject);
+        return Objects.hash(id, signature);
     }
 }
