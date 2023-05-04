@@ -1,6 +1,7 @@
 package com.example.security.service.impl;
 
 import com.example.exeptions.ExpiredTokenException;
+import com.example.exeptions.WrongAuthenticationTokenException;
 import com.example.security.service.TokenProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

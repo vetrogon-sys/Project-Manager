@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -20,12 +21,14 @@
         <lombok.version>1.18.24</lombok.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
-        <org.springframework.web.servlet.version>3.2.5.RELEASE</org.springframework.web.servlet.version>
+        <org.springframework.web.servlet.version>3.2.5.RELEASE
+        </org.springframework.web.servlet.version>
         <junit.version>4.12</junit.version>
         <mockito-core.version>4.8.1</mockito-core.version>
         <spring-boot-starter-validation.version>3.0.1</spring-boot-starter-validation.version>
         <jjwt.version>0.9.1</jjwt.version>
         <spring-boot-maven-plugin.version>2.7.7</spring-boot-maven-plugin.version>
+        <junit.vintage.version>5.4.0</junit.vintage.version>
     </properties>
 
     <dependencies>
@@ -110,6 +113,12 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>${mockito-core.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit.vintage.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

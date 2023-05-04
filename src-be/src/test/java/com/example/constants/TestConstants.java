@@ -178,4 +178,10 @@ public class TestConstants {
         expectedAuthority.setSignature(EXISTING_AUTHORITY_SIGNATURE);
         return expectedAuthority;
     }
+
+    public static ProjectDto getProjectDtoWithoutId() {
+        ProjectDto project = new ProjectDto();
+        project.setName("Test project");
+        return project;
+    }
 }
