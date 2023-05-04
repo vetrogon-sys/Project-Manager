@@ -31,7 +31,7 @@ public class Authority {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 512, nullable = false)
+    @Column(length = 512, nullable = false, unique = true)
     private String signature;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "authorities")
