@@ -8,5 +8,8 @@ export default function AuthenticationTokenStorage() {
         getToken: function () {
             localStorage.getItem(tokenKey);
         },
+        cleareToken: function () {
+            localStorage.removeItem(tokenKey);
+        }
     }
 }
