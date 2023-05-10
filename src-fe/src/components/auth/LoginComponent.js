@@ -40,10 +40,6 @@ export default function LoginComponent() {
     const [errors, setErrors] = useState(new Map());
     const [isLoading, setLoading] = useState(false);
 
-    useEffect(() => {
-        localStorage.removeItem('token');
-    })
-
     const callAuth = () => {
         const emailRegExp = new RegExp('[a-z0-9]+@[a-z]+\\.[a-z]{2,3}');
 

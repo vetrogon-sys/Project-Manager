@@ -11,7 +11,7 @@ const App = () => {
 
   return (
     <div className="App">
-      {authStorage().getToken() !== null ? header() : null}
+      {authStorage().getToken() ? header() : null}
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePageComponent />} />

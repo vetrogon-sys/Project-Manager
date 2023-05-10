@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Backdrop, CircularProgress, Box, Container } from '@mui/material';
+import { Backdrop, CircularProgress, Box, Container, Card, CardContent, Typography } from '@mui/material';
 import projectController from "../../services/ProjectController";
 
 function findOwnProjects() {
@@ -48,22 +48,41 @@ function getProjectBoxStyles() {
     };
 }
 
+function ProjectElement(project) {
+    const [id, setId] = useState(project.id);
+    const [name, setName] = useState(project.name);
+    const [description, setDescription] = useState(project.description);
+
+    return (
+        <Card>
+            <CardContent>
+                <Typography variant="h5">
+                    {name}
+                </Typography>
+                <Typography variant="body2">
+                    {description}
+                </Typography>
+            </CardContent>
+        </Card>
+    )
+}
+
 export default function AllProjectsViewComponent() {
-    const [email, setEmail] = useState('');
     const [ownProjects, setOwnProjects] = useState(null);
     const [assignedProjects, setAssignedProjects] = useState(null);
-    const [isLoading, setLoading] = useState(false);
+    const [isLoading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await getAllProjects();
+            const response = await getAllProjects(setLoading);
 
-            setOwnProjects(response.ownProjects);
             setAssignedProjects(response.assignedProjects);
+            setOwnProjects(response.ownProjects);
         };
 
         fetchData();
-    })
+
+    }, [])
 
     return (
         <div style={{
@@ -79,9 +98,37 @@ export default function AllProjectsViewComponent() {
             }}>
                 <Box sx={getProjectBoxStyles()}>
                     OWN:
+                    <>
+                        {ownProjects ? ownProjects.map(
+                            (project, i) => <Card>
+                                <CardContent>
+                                    <Typography variant="h5">
+                                        {project.name}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        {project.description}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        ) : null}
+                    </>
                 </Box>
                 <Box sx={getProjectBoxStyles()}>
                     ASSIGNED:
+                    <>
+                        {assignedProjects ? assignedProjects.map(
+                            (project, i) => <Card>
+                                <CardContent>
+                                    <Typography variant="h5">
+                                        {project.name}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        {project.description}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        ) : null}
+                    </>
                 </Box>
             </Container >
 

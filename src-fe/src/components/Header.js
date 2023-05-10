@@ -6,6 +6,9 @@ function getAboutMeInformation() {
 
     return http().GET('/users/aboutme')
         .then((response) => {
+            if (response.status === 403) {
+                return;
+            }
             return response.data;
         })
         .catch((err) => {
@@ -13,14 +16,10 @@ function getAboutMeInformation() {
         });
 }
 
-async function findMe(setIsLoading) {
-    setIsLoading(true);
+async function findMe() {
+    const aboutMeResponse = await getAboutMeInformation();
 
-    const aboutMeResponce = await getAboutMeInformation();
-
-    setIsLoading(false);
-
-    return aboutMeResponce;
+    return aboutMeResponse;
 
 }
 
@@ -38,7 +37,7 @@ function getDefaultAvatar() {
     );
 }
 
-export default function HomePageComponent() {
+export default function Header() {
 
     const [user, setUser] = useState(null);
 
@@ -50,7 +49,7 @@ export default function HomePageComponent() {
         };
 
         fetchData();
-    })
+    }, [])
 
     return (
         <Box
