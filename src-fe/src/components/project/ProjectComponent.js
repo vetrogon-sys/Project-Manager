@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom'
-import { Card, CardContent, CardActions, Button, Typography, Backdrop, CircularProgress } from '@mui/material';
+import { Backdrop, CircularProgress } from '@mui/material';
 import deskController from '../../services/DeskController';
 import projectComponentHeader from './ProjectComponentHeader';
 
