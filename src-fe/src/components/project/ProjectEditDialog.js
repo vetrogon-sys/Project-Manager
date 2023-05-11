@@ -5,6 +5,26 @@ import { List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CrossIcon from '@mui/icons-material/Remove';
+import projectController from '../../services/ProjectController';
+
+async function unassignUsers(projectId, userIds) {
+    await projectController().unassignUsers(projectId, userIds);
+}
+
+async function updateProject(project) {
+    const data = await projectController().updateProject(project.id, project)
+        .then((response) => {
+            return response.data;
+        })
+        .catch((err) => {
+            return err.response;
+        });
+
+    return {
+        project: data,
+    };
+
+}
 
 export default function ProjectEditDialog(project, assignedUsers, usersToRemove, _cancelDialog, _updateProject, _setUsersToRemove, _updateProjectDescription) {
     let updDescription = '';
@@ -19,8 +39,16 @@ export default function ProjectEditDialog(project, assignedUsers, usersToRemove,
 
     const acceptChanges = () => {
         _updateProjectDescription(updDescription);
+        const fetchData = async () => {
+            await unassignUsers(project.id, usersToRemove.map(user => user.id));
 
-        _updateProject();
+            const response = await updateProject(project);
+
+            _updateProject(response.project);
+        };
+
+        fetchData();
+
     }
 
     const cancelDialog = () => {

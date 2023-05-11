@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Box, AppBar, Toolbar, Typography, AvatarGroup, Avatar } from '@mui/material';
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, TextField, Button } from '@mui/material';
-import { List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Add';
-import FolderIcon from '@mui/icons-material/Add';
 import projectEditDialog from './ProjectEditDialog';
+import assignUserDialog from './AssignUsersToProjectDialog';
 import projectController from '../../services/ProjectController';
 import userController from '../../services/UserController';
 
@@ -39,12 +36,35 @@ async function getProjectById(projectId) {
 
 }
 
+async function getUnassignedUsers(alreadyAssignedUsers) {
+    if (!alreadyAssignedUsers) {
+        return;
+    }
+    const data = await userController().findAllExclusions(alreadyAssignedUsers.map(user => user.id))
+        .then((response) => {
+            return response.data;
+        })
+        .catch((err) => {
+            return err.response;
+        });
+
+    return {
+        users: data.content,
+        totalPageCount: data.totalElements,
+        pageNumber: data.number
+    };
+
+}
+
 export default function ProjectComponentHeader(projectId) {
     const [project, setProject] = useState(null);
     const [assignedUsers, setAssignedUsers] = useState(null);
     const [assignedUsersTotalyCount, setAssignedUsersTotalyCount] = useState(0);
     const [usersToRemove, setUsersToRemove] = useState(new Array())
+    const [usersToAssign, setUsersToAssign] = useState(new Array())
+    const [unassignedUsers, setUnassignedUsers] = useState(new Array())
     const [isOpenEditDialog, setIsOpenEditDialog] = useState(false);
+    const [isOpenAssignUserDialog, setIsOpenAssignUserDialog] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -60,7 +80,18 @@ export default function ProjectComponentHeader(projectId) {
 
         fetchData();
 
-    }, [])
+    }, [isOpenEditDialog, isOpenAssignUserDialog])
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const users = await getUnassignedUsers(assignedUsers);
+
+            setUnassignedUsers(users);
+        };
+
+        fetchData();
+
+    }, [isOpenAssignUserDialog])
 
     const getAvatarForUser = (user) => {
         return (
@@ -70,19 +101,14 @@ export default function ProjectComponentHeader(projectId) {
         )
     }
 
-
-    const updateProjectDescription = (updDescription) => {
-        setProject({
-            ...project,
-            description: updDescription
-        })
-    }
-
-    const updateProject = () => {
-
+    const updateProject = (project) => {
+        setProject(project);
         cancelEditProjectDialog();
     }
 
+    const updateProjectDescription = (updDescrtiption) => {
+        setProject({...project, description: updDescrtiption})
+    }
 
     const getAssignedUsersAvatars = () => {
         if (!assignedUsers) {
@@ -99,6 +125,14 @@ export default function ProjectComponentHeader(projectId) {
 
     const cancelEditProjectDialog = () => {
         setIsOpenEditDialog(false);
+    }
+
+    const openAssignUserDialog = () => {
+        setIsOpenAssignUserDialog(true);
+    }
+
+    const cancelAssignUserDialog = () => {
+        setIsOpenAssignUserDialog(false);
     }
 
     return (
@@ -120,11 +154,15 @@ export default function ProjectComponentHeader(projectId) {
                         <AvatarGroup max={5}>
                             {assignedUsersTotalyCount ? getAssignedUsersAvatars() : <div></div>}
                         </AvatarGroup>
+                        <IconButton onClick={openAssignUserDialog} >
+                            <AddIcon />
+                        </IconButton>
                     </Toolbar>
                 </AppBar>
             </Box>
 
             {isOpenEditDialog ? projectEditDialog(project, assignedUsers, usersToRemove, cancelEditProjectDialog, updateProject, setUsersToRemove, updateProjectDescription) : <div></div>}
+            {isOpenAssignUserDialog ? assignUserDialog(project, usersToAssign, unassignedUsers, cancelAssignUserDialog, setUsersToAssign) : <div></div>}
         </div>
     )
 

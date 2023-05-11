@@ -35,7 +35,14 @@ export default function HttpService() {
             });
         },
         POST: function (url, data) {
-            return instance.post(url, data, { headers }).then(response => {
+            return instance.post(`${baseApi}${url}`, data, { headers }).then(response => {
+                return response;
+            }).catch(err => {
+                throw err;
+            })
+        },
+        PUT: function (url, data) {
+            return instance.put(`${baseApi}${url}`, data, { headers }).then(response => {
                 return response;
             }).catch(err => {
                 throw err;

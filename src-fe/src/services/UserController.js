@@ -11,6 +11,14 @@ export default function UeskController() {
                 }).catch(err => {
                     throw err;
                 });
+        },
+        findAllExclusions: function(existingIds) {
+            return http().GET(`${baseUri}/exclusions/${existingIds.join()}`)
+                .then(response => {
+                    return response;
+                }).catch(err => {
+                    throw err;
+                });
         }
     }
 }
