@@ -20,5 +20,13 @@ export default function ProjectController() {
                     throw err;
                 });
         },
+        findById: function (id) {
+            return http().GET(`${baseUri}/${id}`)
+                .then(response => {
+                    return response;
+                }).catch(err => {
+                    throw err;
+                });
+        }
     }
 }
