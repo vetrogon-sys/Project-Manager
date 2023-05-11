@@ -22,7 +22,8 @@ public class ProjectController {
 
     @GetMapping("/{projectId}")
     public ResponseEntity<ProjectDto> getById(@PathVariable Long projectId) {
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+              .ok(projectService.getByIdAsDto(projectId));
     }
 
     @GetMapping("/myself/created")

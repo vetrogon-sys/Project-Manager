@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardActions, Button, Typography } from '@mui/material';
 
 export default function ProjectElement(project) {
+
+    const goToProject = () => {
+        window.location.href = `/projects?projectId=${project.id}`;
+    }
 
     return (
         <Card sx={{ minWidth: 275, margin: 2, textAlign: 'left' }}>
@@ -20,7 +24,7 @@ export default function ProjectElement(project) {
                 </Typography>
             </CardContent>
             <CardActions>
-                <Button size="small">See project</Button>
+                <Button size="small" onClick={goToProject}>See project</Button>
             </CardActions>
         </Card>
     )
