@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.dto.ProjectDto;
+import com.example.dto.UsersIdsList;
 import com.example.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,6 +41,16 @@ public class ProjectController {
                                                                            Pageable pageable) {
         return ResponseEntity
               .ok(projectService.getAllWhereUserWithEmailIsAssigned(principal.getName(), pageable));
+    }
+
+    @PutMapping("/{projectId}/unassign/users")
+    public ResponseEntity<Void> unasignUsersWithIdsFromProjectWithId(@PathVariable Long projectId,
+                                                                     @RequestBody UsersIdsList idsList) {
+
+        projectService.removeAssignedUsersWithIdsFromProjectWithId(idsList, projectId);
+        return ResponseEntity
+              .ok()
+              .build();
     }
 
 }

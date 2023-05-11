@@ -16,6 +16,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.List;
@@ -28,6 +30,12 @@ import java.util.Objects;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@NamedEntityGraph(
+      name = "project-with-assigned-users",
+      attributeNodes = {
+            @NamedAttributeNode("assignedUsers"),
+      }
+)
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,22 +55,32 @@ public class Project {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_projects",
-            joinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
+          joinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"),
+          inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
     private List<User> assignedUsers;
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Project project = (Project) o;
         return Objects.equals(id, project.id) &&
-                Objects.equals(name, project.name) &&
-                Objects.equals(description, project.description);
+              Objects.equals(name, project.name) &&
+              Objects.equals(description, project.description);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, name, description);
     }
+
+    public void removeAssignedUsersWithIds(List<Long> userIds) {
+        userIds.removeIf(userId -> creator.getId().equals(userId));
+        assignedUsers.removeIf(user -> userIds.contains(user.getId()));
+    }
+
 }
