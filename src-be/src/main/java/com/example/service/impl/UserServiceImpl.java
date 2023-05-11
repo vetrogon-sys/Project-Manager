@@ -6,6 +6,8 @@ import com.example.mapper.UserMapper;
 import com.example.repository.UserRepository;
 import com.example.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -20,7 +22,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Can't find user with emil: %s", email)));
+              .orElseThrow(() -> new EntityNotFoundException(String.format("Can't find user with emil: %s", email)));
+    }
+
+    @Override
+    public Page<UserDto> getAllAssignedToProjectWithId(Long projectId, Pageable pageable) {
+        return userRepository.findAllByAssignedProjectsIdEquals(projectId, pageable)
+              .map(userMapper::userToUserDto);
     }
 
     @Override
