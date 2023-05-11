@@ -17,6 +17,8 @@ public interface ProjectService {
 
     ProjectDto update(Project project);
 
+    ProjectDto update(Long projectId, ProjectDto projectDto);
+
     List<ProjectDto> getAllWhereUserWithEmailIsCreator(String email, Pageable pageable);
 
     List<ProjectDto> getAllWhereUserWithEmailIsAssigned(String email, Pageable pageable);

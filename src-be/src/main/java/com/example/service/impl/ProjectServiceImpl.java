@@ -46,6 +46,13 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public ProjectDto update(Long projectId, ProjectDto projectDto) {
+        Project project = getById(projectId);
+        project.setDescription(projectDto.getDescription());
+        return update(project);
+    }
+
+    @Override
     public List<ProjectDto> getAllWhereUserWithEmailIsCreator(String email, Pageable pageable) {
         return projectRepository.findAllByCreatorEmailEquals(email, pageable).stream()
               .map(projectMapper::projectToProjectDto)

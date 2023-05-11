@@ -29,6 +29,13 @@ public class ProjectController {
               .ok(projectService.getByIdAsDto(projectId));
     }
 
+    @PutMapping("/{projectId}")
+    public ResponseEntity<ProjectDto> update(@PathVariable Long projectId,
+                                             @RequestBody ProjectDto projectDto) {
+        return ResponseEntity
+              .ok(projectService.update(projectId, projectDto));
+    }
+
     @GetMapping("/myself/created")
     public ResponseEntity<List<ProjectDto>> getCurrentUserCreatedProjects(Authentication principal,
                                                                           Pageable pageable) {
