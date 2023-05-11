@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.dto.UserDto;
+import com.example.dto.UsersIdsList;
 import com.example.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -19,6 +21,13 @@ import javax.servlet.http.HttpServletRequest;
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping("/exclusions/{exclusionsIds}")
+    public ResponseEntity<Page<UserDto>> findAllExclusions(@PathVariable Long[] exclusionsIds,
+                                                           Pageable pageable) {
+        return ResponseEntity
+              .ok(userService.getAllExclusionsIds(new UsersIdsList(List.of(exclusionsIds)), pageable));
+    }
 
     @GetMapping("/assignTo/projects/{projectId}")
     public ResponseEntity<Page<UserDto>> getAssignedToProjectById(@PathVariable Long projectId,

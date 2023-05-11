@@ -1,6 +1,7 @@
 package com.example.service.impl;
 
 import com.example.dto.UserDto;
+import com.example.dto.UsersIdsList;
 import com.example.entity.User;
 import com.example.mapper.UserMapper;
 import com.example.repository.UserRepository;
@@ -23,6 +24,12 @@ public class UserServiceImpl implements UserService {
     public User getByEmail(String email) {
         return userRepository.findByEmail(email)
               .orElseThrow(() -> new EntityNotFoundException(String.format("Can't find user with emil: %s", email)));
+    }
+
+    @Override
+    public Page<UserDto> getAllExclusionsIds(UsersIdsList exclusions, Pageable pageable) {
+        return userRepository.findByIdNotIn(exclusions.getUserIds(), pageable)
+              .map(userMapper::userToUserDto);
     }
 
     @Override
