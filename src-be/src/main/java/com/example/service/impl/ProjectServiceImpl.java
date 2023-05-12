@@ -3,6 +3,7 @@ package com.example.service.impl;
 import com.example.dto.ProjectDto;
 import com.example.dto.UsersIdsList;
 import com.example.entity.Project;
+import com.example.entity.User;
 import com.example.mapper.ProjectMapper;
 import com.example.repository.ProjectRepository;
 import com.example.service.ProjectService;
@@ -81,11 +82,22 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public void removeAssignedUsersWithIdsFromProjectWithId(UsersIdsList idsList, Long projectId) {
-        Project project = projectRepository.findWithAssignedUsersById(projectId)
-              .orElseThrow(() -> new EntityNotFoundException(String.format("Can't find project with id: %d", projectId)));
+        Project project = getProjectWithAssignedUsersById(projectId);
 
         project.removeAssignedUsersWithIds(idsList.getUserIds());
 
         projectRepository.save(project);
+    }
+
+    @Override
+    public void assignUsersToProjectById(Long projectId, List<User> users) {
+        Project project = getProjectWithAssignedUsersById(projectId);
+        project.addAssignUsers(users);
+        update(project);
+    }
+
+    private Project getProjectWithAssignedUsersById(Long projectId) {
+        return projectRepository.findWithAssignedUsersById(projectId)
+              .orElseThrow(() -> new EntityNotFoundException(String.format("Can't find project with id: %d", projectId)));
     }
 }

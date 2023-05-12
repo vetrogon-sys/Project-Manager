@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.dto.ProjectDto;
 import com.example.dto.UsersIdsList;
 import com.example.service.ProjectService;
+import com.example.service.UsersInProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final UsersInProjectService usersInProjectService;
 
     @GetMapping("/{projectId}")
     public ResponseEntity<ProjectDto> getById(@PathVariable Long projectId) {
@@ -48,6 +50,15 @@ public class ProjectController {
                                                                            Pageable pageable) {
         return ResponseEntity
               .ok(projectService.getAllWhereUserWithEmailIsAssigned(principal.getName(), pageable));
+    }
+
+    @PutMapping("/{projectId}/assign/users/{usersIds}")
+    public ResponseEntity<Void> assignUsersToProjects(@PathVariable Long projectId,
+                                                      @PathVariable Long[] usersIds) {
+        usersInProjectService.assignUsersByIdsToProjectById(projectId, List.of(usersIds));
+        return ResponseEntity
+              .ok()
+              .build();
     }
 
     @PutMapping("/{projectId}/unassign/users")

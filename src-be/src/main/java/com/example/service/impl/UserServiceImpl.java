@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +25,11 @@ public class UserServiceImpl implements UserService {
     public User getByEmail(String email) {
         return userRepository.findByEmail(email)
               .orElseThrow(() -> new EntityNotFoundException(String.format("Can't find user with emil: %s", email)));
+    }
+
+    @Override
+    public List<User> getAllByIds(List<Long> ids) {
+        return userRepository.findAllById(ids);
     }
 
     @Override

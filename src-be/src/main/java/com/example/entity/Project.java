@@ -20,6 +20,7 @@ import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -83,4 +84,10 @@ public class Project {
         assignedUsers.removeIf(user -> userIds.contains(user.getId()));
     }
 
+    public void addAssignUsers(List<User> users) {
+        if (Objects.isNull(assignedUsers)) {
+            assignedUsers = new ArrayList<>();
+        }
+        assignedUsers.addAll(users);
+    }
 }
