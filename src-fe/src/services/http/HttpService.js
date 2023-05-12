@@ -47,6 +47,13 @@ export default function HttpService() {
             }).catch(err => {
                 throw err;
             })
+        },
+        PATCH: function (url, data) {
+            return instance.patch(`${baseApi}${url}`, data, { headers }).then(response => {
+                return response;
+            }).catch(err => {
+                throw err;
+            })
         }
     }
 }

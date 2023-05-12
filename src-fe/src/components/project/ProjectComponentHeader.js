@@ -95,7 +95,7 @@ export default function ProjectComponentHeader(projectId) {
 
     const getAvatarForUser = (user) => {
         return (
-            <Avatar alt={user.firstName + ' ' + user.lastName} src={user.imgUrl} >
+            <Avatar key={user.id} alt={user.firstName + ' ' + user.lastName} src={user.imgUrl} >
                 {user.firstName.charAt(0) + ' ' + user.lastName.charAt(0)}
             </Avatar>
         )
