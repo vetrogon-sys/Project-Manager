@@ -75,6 +75,19 @@ export default function DesksList(projectId, _setLoading) {
 
     }, [])
 
+    useEffect(() => {
+        const fetchData = async () => {
+            desks.forEach(async (desk) => {
+                let responseTasks = (await getTasksForDeskWithId(desk.id, _setLoading)).tasks;
+                setTasks(new Map(tasks.set(desk.name, responseTasks)));
+            }); 
+        };
+
+        if (desks) {
+            fetchData();
+        }
+    }, [isCreateTaskDialogOpen])
+
     const openCreateTaskDialog = () => {
         setIsCreateTaskDialogOpen(true);
     }
@@ -156,14 +169,14 @@ export default function DesksList(projectId, _setLoading) {
                     <Typography sx={{ fontSize: 12 }} color="text.secondary" gutterBottom>
                         Task
                     </Typography>
-                    <Typography variant="h6" component="div" >
+                    <Typography sx={{ fontSize: 16 }} component="div" >
                         {task.title}
                     </Typography>
                     <Typography sx={{ fontSize: 12 }} color="text.secondary">
                         adjective
                     </Typography>
-                    <Typography variant="body3">
-                        {task.description ? task.description : 'There isn\'t descritpion here...'}
+                    <Typography sx={{ fontSize: 14 }}>
+                        {task.description ? task.description.substring(0, 32) + '...' : 'There isn\'t descritpion here...'}
                     </Typography>
                 </CardContent>
                 <CardActions sx={{
@@ -196,9 +209,9 @@ export default function DesksList(projectId, _setLoading) {
                 key={desk.id}
                 id={desk.name}
                 sx={{
-                    minWidth: '250',
-                    maxWidth: '370',
                     width: '100%',
+                    minWidth: '250',
+                    maxWidth: '500',
                     margin: '.7rem',
                     backgroundColor: 'rgb(245, 247, 252)',
                     height: 'fit-content',
@@ -237,11 +250,11 @@ export default function DesksList(projectId, _setLoading) {
                 <Box sx={{
                     alignSelf: 'flex-end',
                 }}>
-                    <Button 
-                    onClick={openCreateTaskDialog}
-                    sx={{
-                        margin: '.5rem',
-                    }}>
+                    <Button
+                        onClick={openCreateTaskDialog}
+                        sx={{
+                            margin: '.5rem',
+                        }}>
                         <PlusIcon />
                         Create task
                     </Button>

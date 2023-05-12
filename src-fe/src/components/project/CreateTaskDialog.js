@@ -87,8 +87,6 @@ export default function CreateTask(desk, taskErrors, _clouseDialog, _setTaskErro
         } else {
             _clouseDialog();
         }
-
-        console.log(errors);
     }
 
     return (
