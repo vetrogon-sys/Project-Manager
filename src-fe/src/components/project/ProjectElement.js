@@ -8,7 +8,7 @@ export default function ProjectElement(project) {
     }
 
     return (
-        <Card sx={{ minWidth: 275, margin: 2, textAlign: 'left' }}>
+        <Card key={project.id} sx={{ minWidth: 275, margin: 2, textAlign: 'left' }}>
             <CardContent>
                 <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
                     Project {project.id}

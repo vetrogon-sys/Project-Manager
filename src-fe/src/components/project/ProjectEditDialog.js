@@ -40,7 +40,7 @@ export default function ProjectEditDialog(project, assignedUsers, usersToRemove,
     const acceptChanges = () => {
         _updateProjectDescription(updDescription);
         const fetchData = async () => {
-            await unassignUsers(project.id, usersToRemove.map(user => user.id));
+            await unassignUsers(project.id, usersToRemove.map((user, key) => user.id));
 
             const response = await updateProject(project);
 
@@ -76,7 +76,7 @@ export default function ProjectEditDialog(project, assignedUsers, usersToRemove,
         }
 
         return assignedUsers
-            .map(user => (
+            .map((user, key) => (
                 <ListItem
                     sx={{
                         backgroundColor: usersToRemove.includes(user) ? 'rgb(224, 52, 52);' : '',

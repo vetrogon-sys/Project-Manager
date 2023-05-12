@@ -62,6 +62,7 @@ export default function Header() {
                 backgroundColor: 'primary.dark',
                 alignItems: 'center',
                 justifyContent: 'space-between',
+                zIndex: '100000000'
             }}
         >
             <div></div>
