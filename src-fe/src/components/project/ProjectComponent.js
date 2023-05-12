@@ -34,6 +34,7 @@ export default function ProjectComponent() {
                 width: '100%',
                 display: 'flex',
                 justifyContent: 'center',
+                height: '85%'
             }}>
                 {desksList(projectId, setLoading)}
             </div>

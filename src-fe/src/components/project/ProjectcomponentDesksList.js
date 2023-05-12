@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom'
 import { Box, Typography, Card, CardContent, CardActions, Button } from '@mui/material';
+import PlusIcon from '@mui/icons-material/Add';
 import deskController from '../../services/DeskController';
 import taskController from '../../services/TaskController';
 
@@ -188,10 +189,13 @@ export default function DesksList(projectId, _setLoading) {
                     width: '100%',
                     margin: '.7rem',
                     backgroundColor: 'rgb(245, 247, 252)',
-                    minHeight: '8rem',
+                    height: 'fit-content',
+                    maxHeight: '100%',
                     borderRadius: '.3rem',
-                    height: '100%'
-                }}
+                    display: 'flex',
+                    flexDirection: 'column'
+                }
+                }
                 onDragLeave={(e) => onDragLeave(e)}
                 onDragEnter={(e) => onDragEnter(e)}
                 onDragEnd={(e) => onDragEnd(e)}
@@ -205,7 +209,7 @@ export default function DesksList(projectId, _setLoading) {
                         alignItems: 'center',
                         width: '100%',
                         backgroundColor: 'rgb(199, 208, 235)',
-                        height: '3rem',
+                        minHeight: '3rem',
                         fontWeight: 400
                     }}
                 >
@@ -213,8 +217,20 @@ export default function DesksList(projectId, _setLoading) {
                 </Box>
                 <Box sx={{
                     margin: '.5rem',
+                    overflow: "auto",
+                    height: '100%'
                 }}>
                     {getDeskTasks(desk)}
+                </Box>
+                <Box sx={{
+                    alignSelf: 'flex-end',
+                }}>
+                    <Button sx={{
+                        margin: '.5rem',
+                    }}>
+                        <PlusIcon />
+                        Create task
+                    </Button>
                 </Box>
             </Box >
         )
@@ -231,15 +247,16 @@ export default function DesksList(projectId, _setLoading) {
     }
 
     return (
-        <Box sx={{
-            marginTop: '2rem',
+        <div style={{
+            marginTop: '1rem',
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-between',
-            width: '95%'
+            width: '95%',
+            height: '90%'
         }}>
             {getDesksContainers()}
-        </Box>
+        </div>
     );
 
 }
