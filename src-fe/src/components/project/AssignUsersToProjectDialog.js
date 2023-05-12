@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Typography, Avatar, filledInputClasses } from '@mui/material';
-import { Dialog, DialogTitle, DialogContent, Box, DialogActions, TextField, Button } from '@mui/material';
+import React from 'react';
+import { Typography, Avatar } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import PlusIcon from '@mui/icons-material/Add';
 import CrossIcon from '@mui/icons-material/Remove';
 import projectController from '../../services/ProjectController';
 
-async function assignUsers(projectId, userIds) {
+async function assignUsersByIdsToProjectById(projectId, userIds) {
     await projectController().assignUsers(projectId, userIds);
 }
 
@@ -31,7 +31,7 @@ export default function AssignUsersToProjectDialog(project, usersToAssign, unass
 
     const acceptChanges = () => {
         const fetchData = async () => {
-            await assignUser(project.id, usersToAssign);
+            await assignUsersByIdsToProjectById(project.id, usersToAssign.map(user => user.id));
 
             _cancelDialog();
         };

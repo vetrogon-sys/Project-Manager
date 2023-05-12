@@ -40,10 +40,7 @@ export default function ProjectController() {
                 });
         },
         assignUsers: function (projectId, usersIds) {
-            const userIdsList = {
-                userIds: usersIds
-            }
-            return http().PUT(`${baseUri}/${projectId}/assign/users/`, userIdsList)
+            return http().PUT(`${baseUri}/${projectId}/assign/users/${usersIds.join()}`, null)
                 .then(response => {
                     return response;
                 }).catch(err => {

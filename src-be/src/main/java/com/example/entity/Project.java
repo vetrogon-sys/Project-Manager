@@ -20,9 +20,10 @@ import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Table(name = "projects")
 @Entity
@@ -58,7 +59,7 @@ public class Project {
     @JoinTable(name = "user_projects",
           joinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"),
           inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
-    private List<User> assignedUsers;
+    private Set<User> assignedUsers;
 
     @Override
     public boolean equals(Object o) {
@@ -86,7 +87,7 @@ public class Project {
 
     public void addAssignUsers(List<User> users) {
         if (Objects.isNull(assignedUsers)) {
-            assignedUsers = new ArrayList<>();
+            assignedUsers = new HashSet<>();
         }
         assignedUsers.addAll(users);
     }
