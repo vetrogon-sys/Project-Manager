@@ -6,6 +6,7 @@ import RegistrationComponent from './components/auth/RegistrationComponent';
 import HomePageComponent from './components/HomePageComponent';
 import header from './components/Header';
 import authStorage from './storage/AuthenticationTokenStorage'
+import ProjectComponent from './components/project/ProjectComponent';
 
 const App = () => {
 
@@ -15,6 +16,7 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePageComponent />} />
+          <Route path="/projects" element={<ProjectComponent />} />
           <Route path="/login" element={<LoginComponent />} />
           <Route path="/registration" element={<RegistrationComponent />} />
           <Route path="/server-errror" element={<div>There some server errors ocured</div>} />

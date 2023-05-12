@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Backdrop, CircularProgress, Box, Container, Card, CardContent, Typography } from '@mui/material';
+import { Backdrop, CircularProgress, Box, Container, Card, CardContent, CardActions, Button, Typography } from '@mui/material';
 import projectController from "../../services/ProjectController";
+import projectElement from "./ProjectElement";
 
 function findOwnProjects() {
 
@@ -44,27 +45,11 @@ function getProjectBoxStyles() {
     return {
         width: '48%',
         height: '96%',
-        boxShadow: 4
+        boxShadow: 4,
+        textAlign: 'left',
+        fontSize: '18pt',
+        fontWeight: 400,
     };
-}
-
-function ProjectElement(project) {
-    const [id, setId] = useState(project.id);
-    const [name, setName] = useState(project.name);
-    const [description, setDescription] = useState(project.description);
-
-    return (
-        <Card>
-            <CardContent>
-                <Typography variant="h5">
-                    {name}
-                </Typography>
-                <Typography variant="body2">
-                    {description}
-                </Typography>
-            </CardContent>
-        </Card>
-    )
 }
 
 export default function AllProjectsViewComponent() {
@@ -97,36 +82,22 @@ export default function AllProjectsViewComponent() {
                 justifyContent: 'space-between'
             }}>
                 <Box sx={getProjectBoxStyles()}>
-                    OWN:
+                    <div style={{margin: '5px 15px'}}>
+                        Own Projects:
+                    </div>
                     <>
                         {ownProjects ? ownProjects.map(
-                            (project, i) => <Card>
-                                <CardContent>
-                                    <Typography variant="h5">
-                                        {project.name}
-                                    </Typography>
-                                    <Typography variant="body2">
-                                        {project.description}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
+                            (project, i) => projectElement(project)
                         ) : null}
                     </>
                 </Box>
                 <Box sx={getProjectBoxStyles()}>
-                    ASSIGNED:
+                    <div style={{margin: '5px 15px'}}>
+                        Assigned Projects:
+                    </div>
                     <>
                         {assignedProjects ? assignedProjects.map(
-                            (project, i) => <Card>
-                                <CardContent>
-                                    <Typography variant="h5">
-                                        {project.name}
-                                    </Typography>
-                                    <Typography variant="body2">
-                                        {project.description}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
+                            (project, i) => projectElement(project)
                         ) : null}
                     </>
                 </Box>

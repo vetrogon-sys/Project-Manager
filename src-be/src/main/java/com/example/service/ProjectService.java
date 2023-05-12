@@ -1,7 +1,9 @@
 package com.example.service;
 
 import com.example.dto.ProjectDto;
+import com.example.dto.UsersIdsList;
 import com.example.entity.Project;
+import com.example.entity.User;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -16,6 +18,8 @@ public interface ProjectService {
 
     ProjectDto update(Project project);
 
+    ProjectDto update(Long projectId, ProjectDto projectDto);
+
     List<ProjectDto> getAllWhereUserWithEmailIsCreator(String email, Pageable pageable);
 
     List<ProjectDto> getAllWhereUserWithEmailIsAssigned(String email, Pageable pageable);
@@ -24,4 +28,7 @@ public interface ProjectService {
 
     boolean existById(Long projectId);
 
+    void removeAssignedUsersWithIdsFromProjectWithId(UsersIdsList idsList, Long projectId);
+
+    void assignUsersToProjectById(Long projectId, List<User> users);
 }

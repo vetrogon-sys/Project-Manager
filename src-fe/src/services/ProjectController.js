@@ -20,5 +20,44 @@ export default function ProjectController() {
                     throw err;
                 });
         },
+        findById: function (id) {
+            return http().GET(`${baseUri}/${id}`)
+                .then(response => {
+                    return response;
+                }).catch(err => {
+                    throw err;
+                });
+        },
+        unassignUsers: function (projectId, usersIds) {
+            const userIdsList = {
+                userIds: usersIds
+            }
+            return http().PUT(`${baseUri}/${projectId}/unassign/users`, userIdsList)
+                .then(response => {
+                    return response;
+                }).catch(err => {
+                    throw err;
+                });
+        },
+        assignUsers: function (projectId, usersIds) {
+            return http().PUT(`${baseUri}/${projectId}/assign/users/${usersIds.join()}`, null)
+                .then(response => {
+                    return response;
+                }).catch(err => {
+                    throw err;
+                });
+        },
+        updateProject: function(projectId, project) {
+            const projectDto = {
+                id: projectId,
+                descrition: project.descrition
+            }
+            return http().PUT(`${baseUri}/${projectId}`, projectDto)
+                .then(response => {
+                    return response;
+                }).catch(err => {
+                    throw err;
+                });
+        }
     }
 }

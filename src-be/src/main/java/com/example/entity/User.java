@@ -14,8 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Table(name = "users")
 @Entity
@@ -38,10 +38,10 @@ public class User {
     private String lastName;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "creator", orphanRemoval = true)
-    private List<Project> ownProjects;
+    private Set<Project> ownProjects;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "assignedUsers")
-    private List<Project> assignedProjects;
+    private Set<Project> assignedProjects;
 
     @Override
     public boolean equals(Object o) {
