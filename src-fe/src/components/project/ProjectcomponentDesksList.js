@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom'
-import { Box, Typography, Card, CardContent, CardActions, Button } from '@mui/material';
+import { Box, Typography, Card, CardContent, CardActions, Button, Drawer } from '@mui/material';
 import PlusIcon from '@mui/icons-material/Add';
 import createTaskDialog from './CreateTaskDialog.js';
+import editTaskDialog from './EditTaskDialog.js';
 import deskController from '../../services/DeskController';
 import taskController from '../../services/TaskController';
 
@@ -52,7 +53,10 @@ export default function DesksList(projectId, _setLoading) {
     const [desks, setDesks] = useState();
     const [tasks, setTasks] = useState(new Map());
     const [isCreateTaskDialogOpen, setIsCreateTaskDialogOpen] = useState(false);
+    const [isEditTaskDialogOpen, setIsEditTaskDialogOpen] = useState(false);
     const [taskErrors, setTaskErrors] = useState(null);
+    const [editedTask, setEditedTask] = useState(null);
+    const [deskToChange, setDeskToChange] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -80,7 +84,7 @@ export default function DesksList(projectId, _setLoading) {
             desks.forEach(async (desk) => {
                 let responseTasks = (await getTasksForDeskWithId(desk.id, _setLoading)).tasks;
                 setTasks(new Map(tasks.set(desk.name, responseTasks)));
-            }); 
+            });
         };
 
         if (desks) {
@@ -88,13 +92,23 @@ export default function DesksList(projectId, _setLoading) {
         }
     }, [isCreateTaskDialogOpen])
 
-    const openCreateTaskDialog = () => {
+    const openCreateTaskDialog = (desk) => {
+        setDeskToChange(desk);
         setIsCreateTaskDialogOpen(true);
     }
 
     const clouseCreateTaskDialog = () => {
         setTaskErrors(null);
         setIsCreateTaskDialogOpen(false);
+    }
+
+    const onepnEditTaskDialogForTask = (task) => {
+        setEditedTask(task);
+        setIsEditTaskDialogOpen(true);
+    }
+
+    const clouseEditTaskDialog = () => {
+        setIsEditTaskDialogOpen(false);
     }
 
     const onDragStart = (evt) => {
@@ -182,7 +196,7 @@ export default function DesksList(projectId, _setLoading) {
                 <CardActions sx={{
                     padding: '.1rem .5rem'
                 }}>
-                    <Button size="small">Learn More</Button>
+                    <Button onClick={e => onepnEditTaskDialogForTask(task)} size="small">Learn More</Button>
                 </CardActions>
             </Card>
         )
@@ -251,7 +265,7 @@ export default function DesksList(projectId, _setLoading) {
                     alignSelf: 'flex-end',
                 }}>
                     <Button
-                        onClick={openCreateTaskDialog}
+                        onClick={e => openCreateTaskDialog(desk)}
                         sx={{
                             margin: '.5rem',
                         }}>
@@ -260,7 +274,8 @@ export default function DesksList(projectId, _setLoading) {
                     </Button>
                 </Box>
 
-                {isCreateTaskDialogOpen ? createTaskDialog(desk, taskErrors, clouseCreateTaskDialog, setTaskErrors) : <div></div>}
+                {isCreateTaskDialogOpen ? createTaskDialog(deskToChange, taskErrors, clouseCreateTaskDialog, setTaskErrors) : <div></div>}
+                {isEditTaskDialogOpen ? editTaskDialog(deskToChange, editedTask, taskErrors, clouseEditTaskDialog, setTaskErrors) : <div></div>}
             </Box >
         )
     }
