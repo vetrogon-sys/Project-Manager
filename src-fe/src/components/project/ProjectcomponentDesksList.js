@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom'
 import { Box, Typography, Card, CardContent, CardActions, Button } from '@mui/material';
 import PlusIcon from '@mui/icons-material/Add';
+import createTaskDialog from './CreateTaskDialog.js';
 import deskController from '../../services/DeskController';
 import taskController from '../../services/TaskController';
 
@@ -50,6 +51,8 @@ async function moveTaskToAnotherDesk(taskId, currentDeskId, updatedDeskId) {
 export default function DesksList(projectId, _setLoading) {
     const [desks, setDesks] = useState();
     const [tasks, setTasks] = useState(new Map());
+    const [isCreateTaskDialogOpen, setIsCreateTaskDialogOpen] = useState(false);
+    const [taskErrors, setTaskErrors] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -71,6 +74,15 @@ export default function DesksList(projectId, _setLoading) {
         }
 
     }, [])
+
+    const openCreateTaskDialog = () => {
+        setIsCreateTaskDialogOpen(true);
+    }
+
+    const clouseCreateTaskDialog = () => {
+        setTaskErrors(null);
+        setIsCreateTaskDialogOpen(false);
+    }
 
     const onDragStart = (evt) => {
         let element = evt.currentTarget;
@@ -225,13 +237,17 @@ export default function DesksList(projectId, _setLoading) {
                 <Box sx={{
                     alignSelf: 'flex-end',
                 }}>
-                    <Button sx={{
+                    <Button 
+                    onClick={openCreateTaskDialog}
+                    sx={{
                         margin: '.5rem',
                     }}>
                         <PlusIcon />
                         Create task
                     </Button>
                 </Box>
+
+                {isCreateTaskDialogOpen ? createTaskDialog(desk, taskErrors, clouseCreateTaskDialog, setTaskErrors) : <div></div>}
             </Box >
         )
     }

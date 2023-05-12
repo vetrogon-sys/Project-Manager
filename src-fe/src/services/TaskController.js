@@ -19,6 +19,14 @@ export default function TaskController(deskId) {
                 }).catch(err => {
                     throw err;
                 });
+        },
+        createTaskInDesk: function (taskDto) {
+            return http().POST(`${baseUri}`, taskDto)
+                .then(response => {
+                    return response;
+                }).catch(err => {
+                    throw err;
+                });
         }
     }
 }
