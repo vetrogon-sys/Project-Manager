@@ -4,15 +4,10 @@ import { Drawer, Box, Button, TextField } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs';
-import { List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import PlusIcon from '@mui/icons-material/Add';
-import CrossIcon from '@mui/icons-material/Remove';
-import projectController from '../../services/ProjectController';
 import TaskController from '../../services/TaskController';
 
-async function createTaskInDesk(deskId, taskDto) {
-    const data = await TaskController(deskId).createTaskInDesk(taskDto)
+async function editTaskInDesk(deskId, taskId, taskDto) {
+    const data = await TaskController(deskId).editTaskInDesk(taskId, taskDto)
         .then((response) => {
             return response.data;
         })
@@ -31,17 +26,17 @@ async function createTaskInDesk(deskId, taskDto) {
 }
 
 export default function EditTask(desk, task, taskErrors, _clouseDialog, _setTaskErrors) {
-    let title;
-    let description;
-    let reqResolutionDate;
+    let title = task.title;
+    let description = task.description;
+    let reqResolutionDate = task.reqResolutionDate;
     let errors = {
         titleMessage: null,
         descriptionMessage: null,
         reqResolutionDateMessage: null,
     };
 
-    const createTask = async (taskDto) => {
-        return await createTaskInDesk(desk.id, taskDto);
+    const editTask = async (taskId, taskDto) => {
+        return await editTaskInDesk(desk.id, taskId, taskDto);
     }
 
     const handleTitleInput = (event) => {
@@ -52,10 +47,10 @@ export default function EditTask(desk, task, taskErrors, _clouseDialog, _setTask
         description = event.target.value;
     }
 
-    const acceptChanges = async () => {
-        const titleReg = new RegExp('(?=.{15,125}$)');
+    const isTaskValid = () => {
+        const titleReg = new RegExp('(?=.{5,125}$)');
         if (!titleReg.test(title)) {
-            errors.titleMessage = 'Task title must be between 15 and 125 symbols';
+            errors.titleMessage = 'Task title must be between 5 and 125 symbols';
         }
 
         if (description && description.length > 512) {
@@ -64,21 +59,42 @@ export default function EditTask(desk, task, taskErrors, _clouseDialog, _setTask
         if (reqResolutionDate && !reqResolutionDate.isAfter(dayjs())) {
             errors.reqResolutionDateMessage = 'You can chose only day in future to resolute this task';
         }
+
         if (errors.titleMessage
             || errors.descriptionMessage
             || errors.reqResolutionDateMessage) {
             _setTaskErrors(errors);
+            return false;
+        }
+
+        return true;
+    }
+
+    const isTaskEqualsCurrent = () => {
+        return title === task.title
+            && description === task.description
+            && reqResolutionDate === task.reqResolutionDate;
+    }
+
+    const acceptChanges = async () => {
+
+        if (isTaskEqualsCurrent()) {
+            _clouseDialog();
+        }
+
+        if (!isTaskValid()) {
             return;
         }
 
         const taskDto = {
             title: title,
             description: description,
-            creationDate: dayjs().format('YYYY-MM-DD'),
+            creationDate: task.creationDate,
             reqResolutionDate: reqResolutionDate ? reqResolutionDate.format('YYYY-MM-DD') : null,
         };
 
-        const response = await createTask(taskDto);
+        console.log(desk)
+        const response = await editTask(task.id, taskDto);
         if (response.errors) {
             errors.titleMessage = response.errors.title;
             errors.descriptionMessage = response.errors.description;
@@ -87,6 +103,11 @@ export default function EditTask(desk, task, taskErrors, _clouseDialog, _setTask
         } else {
             _clouseDialog();
         }
+    }
+
+    const clouseDialog = () => {
+        _setTaskErrors([]);
+        _clouseDialog();
     }
 
     return (
@@ -136,21 +157,14 @@ export default function EditTask(desk, task, taskErrors, _clouseDialog, _setTask
                 >
                     <DatePicker
                         onChange={(newValue) => reqResolutionDate = newValue}
-                        // dateFormat="DD-MM-YYYY"
                         defaultValue={task.reqResolutionDate ? dayjs(task.reqResolutionDate, 'YYYY-MM-DD') : dayjs()}
-                    // defaultValue={new Date()}
-                    // slotProps={{
-                    //     textField: {
-                    //         error: taskErrors && taskErrors.reqResolutionDateMessage ? true : false,
-                    //         helperText: taskErrors ? taskErrors.reqResolutionDateMessage : '',
-                    //     },
-                    // }}
                     />
                 </LocalizationProvider>
                 <Box sx={{
                     marginTop: '1rem'
                 }}>
                     <Button variant="contained" color="success" onClick={acceptChanges}>Accept</Button>
+                    <Button variant="contained" color="error" onClick={clouseDialog} sx={{ marginLeft: '1rem' }}>Cancel</Button>
                 </Box>
             </Box>
         </Drawer>

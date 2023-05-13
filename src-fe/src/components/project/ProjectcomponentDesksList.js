@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom'
-import { Box, Typography, Card, CardContent, CardActions, Button, Drawer } from '@mui/material';
+import { Box, Typography, Card, CardContent, CardActions, Button, IconButton } from '@mui/material';
 import PlusIcon from '@mui/icons-material/Add';
+import More from '@mui/icons-material/ReadMore.js';
 import createTaskDialog from './CreateTaskDialog.js';
 import editTaskDialog from './EditTaskDialog.js';
 import deskController from '../../services/DeskController';
@@ -65,7 +65,7 @@ export default function DesksList(projectId, _setLoading) {
             if (response.desks) {
                 response.desks.forEach(async (desk) => {
                     let responseTasks = (await getTasksForDeskWithId(desk.id, _setLoading)).tasks;
-
+                    console.log(responseTasks)
                     setTasks(new Map(tasks.set(desk.name, responseTasks)));
                 })
 
@@ -90,7 +90,11 @@ export default function DesksList(projectId, _setLoading) {
         if (desks) {
             fetchData();
         }
-    }, [isCreateTaskDialogOpen])
+    }, [isCreateTaskDialogOpen, isEditTaskDialogOpen])
+
+    const getDeskByName = (name) => {
+        return desks.find(desk => desk.name === name);
+    }
 
     const openCreateTaskDialog = (desk) => {
         setDeskToChange(desk);
@@ -102,7 +106,8 @@ export default function DesksList(projectId, _setLoading) {
         setIsCreateTaskDialogOpen(false);
     }
 
-    const onepnEditTaskDialogForTask = (task) => {
+    const onepnEditTaskDialogForTask = (event, task) => {
+        setDeskToChange(getDeskByName(event.currentTarget.parentElement.parentElement.parentElement.parentElement.id));
         setEditedTask(task);
         setIsEditTaskDialogOpen(true);
     }
@@ -159,8 +164,8 @@ export default function DesksList(projectId, _setLoading) {
         let updatedDeskTasks = tasks.get(deskName);
         updatedDeskTasks.push(taskToMove);
 
-        const currentDeskId = desks.find(desk => desk.name === currentDeskName).id;
-        const updatedDeskId = desks.find(desk => desk.name === deskName).id;
+        const currentDeskId = getDeskByName(currentDeskName).id;
+        const updatedDeskId = getDeskByName(deskName).id;
         moveTaskToAnotherDesk(taskId, currentDeskId, updatedDeskId);
         setTasks(new Map(updatedTasks.set(deskName, updatedDeskTasks)));
     };
@@ -180,23 +185,31 @@ export default function DesksList(projectId, _setLoading) {
                 <CardContent sx={{
                     padding: '.5rem .5rem 0 .5rem'
                 }}>
-                    <Typography sx={{ fontSize: 12 }} color="text.secondary" gutterBottom>
+                    {/* <Typography sx={{ fontSize: 12 }} color="text.secondary" gutterBottom>
                         Task
-                    </Typography>
+                    </Typography> */}
                     <Typography sx={{ fontSize: 16 }} component="div" >
                         {task.title}
                     </Typography>
-                    <Typography sx={{ fontSize: 12 }} color="text.secondary">
+                    {/* <Typography sx={{ fontSize: 12 }} color="text.secondary">
                         adjective
-                    </Typography>
-                    <Typography sx={{ fontSize: 14 }}>
-                        {task.description ? task.description.substring(0, 32) + '...' : 'There isn\'t descritpion here...'}
+                    </Typography> */}
+                    <Typography sx={{ fontSize: 14 }} color="text.secondary">
+                        {task.description
+                            ? (task.description.substring(0, 32) + (task.description.length > 32 ? '...' : ''))
+                            : 'There isn\'t descritpion here...'}
                     </Typography>
                 </CardContent>
                 <CardActions sx={{
                     padding: '.1rem .5rem'
                 }}>
-                    <Button onClick={e => onepnEditTaskDialogForTask(task)} size="small">Learn More</Button>
+                    <IconButton
+                        className='lorn-more-ico-button'
+                        onClick={e => onepnEditTaskDialogForTask(e, task)}
+                        size='small'>
+                        <More />
+                    </IconButton>
+
                 </CardActions>
             </Card>
         )
