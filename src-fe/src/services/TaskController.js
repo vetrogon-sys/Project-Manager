@@ -27,6 +27,14 @@ export default function TaskController(deskId) {
                 }).catch(err => {
                     throw err;
                 });
+        },
+        editTaskInDesk: function (taskId, taskDto) {
+            return http().PATCH(`${baseUri}/${taskId}`, taskDto)
+                .then(response => {
+                    return response;
+                }).catch(err => {
+                    throw err;
+                });
         }
     }
 }
