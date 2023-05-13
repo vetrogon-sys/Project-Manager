@@ -36,6 +36,12 @@ public class UserController {
               .ok(userService.getAllAssignedToProjectWithId(projectId, pageable));
     }
 
+    @GetMapping("/assignTo/tasks/{taskId}")
+    public ResponseEntity<UserDto> getAssignedToTaskById(@PathVariable Long taskId) {
+        return ResponseEntity
+              .ok(userService.getAssignedToTaskWithId(taskId));
+    }
+
     @GetMapping("/aboutme")
     public ResponseEntity<UserDto> aboutMe(HttpServletRequest request) {
         return ResponseEntity

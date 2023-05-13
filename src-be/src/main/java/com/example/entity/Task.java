@@ -17,7 +17,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
-import javax.persistence.NamedEntityGraphs;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDate;
@@ -30,12 +29,10 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@NamedEntityGraphs({
-      @NamedEntityGraph(
-            name = "task-with-desk",
-            attributeNodes = {@NamedAttributeNode("desk")}
-      )
-})
+@NamedEntityGraph(
+      name = "task-with-desk",
+      attributeNodes = {@NamedAttributeNode("desk")}
+)
 public class Task {
     @Id
     @SequenceGenerator(name = "pk_task_sequence", sequenceName = "task_id_sequence", allocationSize = 1)
@@ -48,7 +45,7 @@ public class Task {
     private LocalDate creationDate;
     private LocalDate reqResolutionDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_id", referencedColumnName = "id")
     private User assignedUser;
 

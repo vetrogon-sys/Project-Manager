@@ -59,4 +59,11 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsByEmail(email);
     }
 
+    @Override
+    public UserDto getAssignedToTaskWithId(Long taskId) {
+        User user = userRepository.findByAssignedTasksIdEquals(taskId)
+              .orElseThrow(() -> new EntityNotFoundException(String.format("There isn't Users assign to task with id: %d", taskId)));
+        return userMapper.userToUserDto(user);
+    }
+
 }
