@@ -16,6 +16,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByAssignedTasksIdEquals(Long taskId);
 
+    boolean existsByAssignedTasksId(Long taskId);
+
     boolean existsByEmail(String email);
 
     Page<User> findAllByAssignedProjectsIdEquals(Long projectId, Pageable pageable);

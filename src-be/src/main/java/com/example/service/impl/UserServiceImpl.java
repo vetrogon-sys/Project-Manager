@@ -66,4 +66,9 @@ public class UserServiceImpl implements UserService {
         return userMapper.userToUserDto(user);
     }
 
+    @Override
+    public boolean isAssignedToTaskWithIdExist(Long taskId) {
+        return userRepository.existsByAssignedTasksId(taskId);
+    }
+
 }

@@ -25,4 +25,6 @@ public interface UserService {
     boolean isUserWithEmailExist(String email);
 
     UserDto getAssignedToTaskWithId(Long taskId);
+
+    boolean isAssignedToTaskWithIdExist(Long taskId);
 }

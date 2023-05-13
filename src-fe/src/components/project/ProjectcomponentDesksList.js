@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Card, CardContent, CardActions, Button, IconButton } from '@mui/material';
+import { Box, Typography, Card, CardContent, CardActions, Button, IconButton, Avatar } from '@mui/material';
 import PlusIcon from '@mui/icons-material/Add';
 import More from '@mui/icons-material/ReadMore.js';
 import createTaskDialog from './CreateTaskDialog.js';
 import editTaskDialog from './EditTaskDialog.js';
 import deskController from '../../services/DeskController';
 import taskController from '../../services/TaskController';
+import userController from '../../services/UserController.js';
 
 async function getDesks(projectId, setIsLoading) {
     setIsLoading(true);
@@ -26,6 +27,34 @@ async function getDesks(projectId, setIsLoading) {
 
 }
 
+async function isAnyUserAssignToTaskWithId(taskId) {
+    const data = await userController().isAssignedToTasktWithIdExist(taskId)
+        .then((response) => {
+            return response.status === 204 ? false : true;
+        })
+        .catch((err) => {
+            return err.response;
+        });
+
+    return {
+        isExist: data,
+    };
+}
+
+async function getUserAssignedToTaskWithId(taskId) {
+    const data = await userController().findAssignedToTasktWithId(taskId)
+        .then((response) => {
+            return response.data;
+        })
+        .catch((err) => {
+            return null;
+        });
+
+    return {
+        user: data,
+    };
+}
+
 async function getTasksForDeskWithId(deskId, setIsLoading) {
     setIsLoading(true);
 
@@ -36,6 +65,22 @@ async function getTasksForDeskWithId(deskId, setIsLoading) {
         .catch((err) => {
             return err.response;
         });
+
+    if (data) {
+        let tasksWithAssignedUser = [];
+        for (const task of data) {
+            const isAssignUserExist = (await isAnyUserAssignToTaskWithId(task.id)).isExist;
+            if (isAssignUserExist) {
+                tasksWithAssignedUser.push(task);
+            }
+        }
+
+        tasksWithAssignedUser.forEach(async (task) => {
+            const user = (await getUserAssignedToTaskWithId(task.id)).user;
+            const t = data.find(t => t.id === task.id);
+            t.assignedUser = user;
+        })
+    }
 
     setIsLoading(false);
 
@@ -63,9 +108,9 @@ export default function DesksList(projectId, _setLoading) {
             let response = await getDesks(projectId, _setLoading);
 
             if (response.desks) {
+
                 response.desks.forEach(async (desk) => {
                     let responseTasks = (await getTasksForDeskWithId(desk.id, _setLoading)).tasks;
-                    console.log(responseTasks)
                     setTasks(new Map(tasks.set(desk.name, responseTasks)));
                 })
 
@@ -170,6 +215,22 @@ export default function DesksList(projectId, _setLoading) {
         setTasks(new Map(updatedTasks.set(deskName, updatedDeskTasks)));
     };
 
+    const getAvatarForUser = (user) => {
+        return (
+            <Avatar
+                key={user.id}
+                alt={user.firstName + ' ' + user.lastName}
+                src={user.imgUrl}
+                sx={{
+                    width: 30,
+                    height: 30,
+                    fontSize: 12
+                }} >
+                {user.firstName ? (user.firstName.charAt(0) + ' ' + user.lastName.charAt(0)) : ''}
+            </Avatar>
+        )
+    }
+
     const getTaskElement = (task) => {
         return (
             <Card
@@ -201,7 +262,9 @@ export default function DesksList(projectId, _setLoading) {
                     </Typography>
                 </CardContent>
                 <CardActions sx={{
-                    padding: '.1rem .5rem'
+                    padding: '.1rem .5rem',
+                    display: 'flex',
+                    justifyContent: 'space-between'
                 }}>
                     <IconButton
                         className='lorn-more-ico-button'
@@ -209,7 +272,7 @@ export default function DesksList(projectId, _setLoading) {
                         size='small'>
                         <More />
                     </IconButton>
-
+                    {task.assignedUser ? getAvatarForUser(task.assignedUser) : <div></div>}
                 </CardActions>
             </Card>
         )
@@ -309,7 +372,7 @@ export default function DesksList(projectId, _setLoading) {
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-between',
-            width: '95%',
+            // width: '95%',
             height: '90%'
         }}>
             {getDesksContainers()}

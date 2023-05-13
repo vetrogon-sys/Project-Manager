@@ -19,6 +19,22 @@ export default function UeskController() {
                 }).catch(err => {
                     throw err;
                 });
-        }
+        },
+        isAssignedToTasktWithIdExist: function (taskId) {
+            return http().HEAD(`${baseUri}/assignTo/tasks/${taskId}`)
+                .then(response => {
+                    return response;
+                }).catch(err => {
+                    throw err;
+                });
+        },
+        findAssignedToTasktWithId: function (taskId) {
+            return http().GET(`${baseUri}/assignTo/tasks/${taskId}`)
+                .then(response => {
+                    return response;
+                }).catch(err => {
+                    throw err;
+                });
+        },
     }
 }
