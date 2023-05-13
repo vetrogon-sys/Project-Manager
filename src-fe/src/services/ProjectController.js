@@ -32,7 +32,7 @@ export default function ProjectController() {
             const userIdsList = {
                 userIds: usersIds
             }
-            return http().PUT(`${baseUri}/${projectId}/unassign/users`, userIdsList)
+            return http().PATCH(`${baseUri}/${projectId}/unassign/users`, userIdsList)
                 .then(response => {
                     return response;
                 }).catch(err => {
@@ -40,7 +40,7 @@ export default function ProjectController() {
                 });
         },
         assignUsers: function (projectId, usersIds) {
-            return http().PUT(`${baseUri}/${projectId}/assign/users/${usersIds.join()}`, null)
+            return http().PATCH(`${baseUri}/${projectId}/assign/users/${usersIds.join()}`, null)
                 .then(response => {
                     return response;
                 }).catch(err => {
@@ -52,7 +52,7 @@ export default function ProjectController() {
                 id: projectId,
                 descrition: project.descrition
             }
-            return http().PUT(`${baseUri}/${projectId}`, projectDto)
+            return http().PATCH(`${baseUri}/${projectId}`, projectDto)
                 .then(response => {
                     return response;
                 }).catch(err => {
