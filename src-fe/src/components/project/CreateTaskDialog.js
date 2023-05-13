@@ -53,9 +53,9 @@ export default function CreateTask(desk, taskErrors, _clouseDialog, _setTaskErro
     }
 
     const acceptChanges = async () => {
-        const titleReg = new RegExp('(?=.{15,125}$)');
+        const titleReg = new RegExp('(?=.{5,125}$)');
         if (!titleReg.test(title)) {
-            errors.titleMessage = 'Task title must be between 15 and 125 symbols';
+            errors.titleMessage = 'Task title must be between 5 and 125 symbols';
         }
 
         if (description && description.length > 512) {

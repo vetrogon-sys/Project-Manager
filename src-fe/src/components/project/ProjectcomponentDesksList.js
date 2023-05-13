@@ -9,7 +9,9 @@ import taskController from '../../services/TaskController';
 import userController from '../../services/UserController.js';
 
 async function getDesks(projectId, setIsLoading) {
-    setIsLoading(true);
+    if (setIsLoading) {
+        setIsLoading(true);
+    }
 
     const data = await deskController(projectId).findAll()
         .then((response) => {
@@ -19,7 +21,9 @@ async function getDesks(projectId, setIsLoading) {
             return err.response;
         });
 
-    setIsLoading(false);
+    if (setIsLoading) {
+        setIsLoading(false);
+    }
 
     return {
         desks: data,
@@ -56,7 +60,9 @@ async function getUserAssignedToTaskWithId(taskId) {
 }
 
 async function getTasksForDeskWithId(deskId, setIsLoading) {
-    setIsLoading(true);
+    if (setIsLoading) {
+        setIsLoading(true);
+    }
 
     const data = await taskController(deskId).findAllInDesk()
         .then((response) => {
@@ -66,23 +72,9 @@ async function getTasksForDeskWithId(deskId, setIsLoading) {
             return err.response;
         });
 
-    if (data) {
-        let tasksWithAssignedUser = [];
-        for (const task of data) {
-            const isAssignUserExist = (await isAnyUserAssignToTaskWithId(task.id)).isExist;
-            if (isAssignUserExist) {
-                tasksWithAssignedUser.push(task);
-            }
-        }
-
-        tasksWithAssignedUser.forEach(async (task) => {
-            const user = (await getUserAssignedToTaskWithId(task.id)).user;
-            const t = data.find(t => t.id === task.id);
-            t.assignedUser = user;
-        })
+    if (setIsLoading) {
+        setIsLoading(false);
     }
-
-    setIsLoading(false);
 
     return {
         tasks: data,
@@ -97,6 +89,7 @@ async function moveTaskToAnotherDesk(taskId, currentDeskId, updatedDeskId) {
 export default function DesksList(projectId, _setLoading) {
     const [desks, setDesks] = useState();
     const [tasks, setTasks] = useState(new Map());
+    const [assignedUsers, setAssignedUsers] = useState(new Map());
     const [isCreateTaskDialogOpen, setIsCreateTaskDialogOpen] = useState(false);
     const [isEditTaskDialogOpen, setIsEditTaskDialogOpen] = useState(false);
     const [taskErrors, setTaskErrors] = useState(null);
@@ -104,13 +97,21 @@ export default function DesksList(projectId, _setLoading) {
     const [deskToChange, setDeskToChange] = useState(null);
 
     useEffect(() => {
-        const fetchData = async () => {
-            let response = await getDesks(projectId, _setLoading);
+        const fetchData = async (isLoading) => {
+            let response = await getDesks(projectId, isLoading ? _setLoading : null);
 
             if (response.desks) {
 
                 response.desks.forEach(async (desk) => {
-                    let responseTasks = (await getTasksForDeskWithId(desk.id, _setLoading)).tasks;
+                    let responseTasks = (await getTasksForDeskWithId(desk.id, isLoading ? _setLoading : null)).tasks;
+
+                    responseTasks.forEach(async (task) => {
+                        const isAssignUserExist = (await isAnyUserAssignToTaskWithId(task.id)).isExist;
+                        if (isAssignUserExist) {
+                            const user = (await getUserAssignedToTaskWithId(task.id)).user;
+                            setAssignedUsers(new Map(assignedUsers.set(task.id, user)))
+                        }
+                    })
                     setTasks(new Map(tasks.set(desk.name, responseTasks)));
                 })
 
@@ -118,8 +119,13 @@ export default function DesksList(projectId, _setLoading) {
             }
         };
 
-        if (!desks) {
-            fetchData();
+        fetchData(true);
+
+        const interval = setInterval(() => {
+            fetchData(false);
+        }, 10000)
+        return () => {
+            clearInterval(interval);
         }
 
     }, [])
@@ -127,7 +133,14 @@ export default function DesksList(projectId, _setLoading) {
     useEffect(() => {
         const fetchData = async () => {
             desks.forEach(async (desk) => {
-                let responseTasks = (await getTasksForDeskWithId(desk.id, _setLoading)).tasks;
+                let responseTasks = (await getTasksForDeskWithId(desk.id, null)).tasks;
+                responseTasks.forEach(async (task) => {
+                    const isAssignUserExist = (await isAnyUserAssignToTaskWithId(task.id)).isExist;
+                    if (isAssignUserExist) {
+                        const user = (await getUserAssignedToTaskWithId(task.id)).user;
+                        setAssignedUsers(new Map(assignedUsers.set(task.id, user)))
+                    }
+                })
                 setTasks(new Map(tasks.set(desk.name, responseTasks)));
             });
         };
@@ -272,7 +285,9 @@ export default function DesksList(projectId, _setLoading) {
                         size='small'>
                         <More />
                     </IconButton>
-                    {task.assignedUser ? getAvatarForUser(task.assignedUser) : <div></div>}
+                    {assignedUsers.get(task.id)
+                        ? getAvatarForUser(assignedUsers.get(task.id))
+                        : <div></div>}
                 </CardActions>
             </Card>
         )
@@ -299,7 +314,6 @@ export default function DesksList(projectId, _setLoading) {
                 key={desk.id}
                 id={desk.name}
                 sx={{
-                    width: '100%',
                     minWidth: '250',
                     maxWidth: '500',
                     margin: '.7rem',
@@ -371,8 +385,7 @@ export default function DesksList(projectId, _setLoading) {
             marginTop: '1rem',
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'space-between',
-            // width: '95%',
+            width: '95%',
             height: '90%'
         }}>
             {getDesksContainers()}
