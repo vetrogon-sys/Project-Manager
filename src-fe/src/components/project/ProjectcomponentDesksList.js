@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, Card, CardContent, CardActions, Button, IconButton, Avatar, Container, TextField } from '@mui/material';
 import PlusIcon from '@mui/icons-material/Add';
 import AddIcon from '@mui/icons-material/Add.js';
-import More from '@mui/icons-material/ReadMore.js';
-import CreateTaskDialog from './CreateTaskDialog.js';
+import MoreIcon from '@mui/icons-material/ReadMore.js';
+import DeleteIcon from '@mui/icons-material/Delete.js';
 import EditTaskDialog from './EditTaskDialog.js';
 import deskController from '../../services/DeskController';
 import taskController from '../../services/TaskController';
 import userController from '../../services/UserController.js';
-import CreateDesk from './CreateDeskDialog.js';
+import CreateTaskDialog from './CreateTaskDialog.js';
+import CreateDeskDialog from './CreateDeskDialog.js';
+import DeleteDeskDialog from './DeleteDeskDialog.js';
 
 async function getDesks(projectId, setIsLoading) {
     if (setIsLoading) {
@@ -95,6 +97,7 @@ export default function DesksList(projectId, _setLoading) {
     const [isCreateTaskDialogOpen, setIsCreateTaskDialogOpen] = useState(false);
     const [isEditTaskDialogOpen, setIsEditTaskDialogOpen] = useState(false);
     const [isCreateDeskMode, setIsCreateDeskMode] = useState(false);
+    const [isDeleteDeskDialogOpen, setIsDeleteDeskDialogOpen] = useState(false);
     const [editedTask, setEditedTask] = useState(null);
     const [deskToChange, setDeskToChange] = useState(null);
 
@@ -150,7 +153,7 @@ export default function DesksList(projectId, _setLoading) {
         if (desks) {
             fetchData();
         }
-    }, [isCreateTaskDialogOpen, isEditTaskDialogOpen, isCreateDeskMode])
+    }, [isCreateTaskDialogOpen, isEditTaskDialogOpen, isCreateDeskMode, isDeleteDeskDialogOpen])
 
     const getDeskByName = (name) => {
         return desks.find(desk => desk.name === name);
@@ -163,6 +166,15 @@ export default function DesksList(projectId, _setLoading) {
 
     const closeCreateTaskDialog = () => {
         setIsCreateTaskDialogOpen(false);
+    }
+
+    const openDeleteDeskDialog = (desk) => {
+        setDeskToChange(desk);
+        setIsDeleteDeskDialogOpen(true);
+    }
+
+    const closeDeleteDeskDialog = () => {
+        setIsDeleteDeskDialogOpen(false);
     }
 
     const onepnEditTaskDialogForTask = (event, task) => {
@@ -286,7 +298,7 @@ export default function DesksList(projectId, _setLoading) {
                         className='lorn-more-ico-button'
                         onClick={e => onepnEditTaskDialogForTask(e, task)}
                         size='small'>
-                        <More />
+                        <MoreIcon />
                     </IconButton>
                     {assignedUsers.get(task.id)
                         ? getAvatarForUser(assignedUsers.get(task.id))
@@ -336,7 +348,6 @@ export default function DesksList(projectId, _setLoading) {
                 <Box
                     sx={{
                         display: 'flex',
-                        justifyContent: 'center',
                         alignItems: 'center',
                         width: '100%',
                         backgroundColor: 'rgb(199, 208, 235)',
@@ -344,7 +355,18 @@ export default function DesksList(projectId, _setLoading) {
                         fontWeight: 400
                     }}
                 >
-                    {desk.name}
+                    <div style={{
+                        marginLeft: '1rem'
+                    }}>
+                        {desk.name}
+                    </div>
+                    <IconButton
+                        onClick={e => openDeleteDeskDialog(desk)}
+                        sx={{
+                            marginLeft: 'auto',
+                        }}>
+                        <DeleteIcon />
+                    </IconButton>
                 </Box>
                 <Box sx={{
                     margin: '.5rem',
@@ -370,24 +392,26 @@ export default function DesksList(projectId, _setLoading) {
                     ? <CreateTaskDialog
                         desk={deskToChange}
                         clouseDialog={closeCreateTaskDialog} />
-                    : <div></div>}
+                    : null}
                 {isEditTaskDialogOpen
                     ? <EditTaskDialog
                         desk={deskToChange}
                         editedTask={editedTask}
                         clouseDialog={closeEditTaskDialog} />
-                    : <div></div>}
+                    : null}
+                {isDeleteDeskDialogOpen
+                    ? <DeleteDeskDialog
+                        projectId={projectId}
+                        desk={deskToChange}
+                        closeDialog={closeDeleteDeskDialog} />
+                    : null}
             </Box >
         )
     }
 
-    const getCreateDeskElement = () => {
-
-    }
-
     const getCreateDeskButton = () => {
         if (isCreateDeskMode) {
-            return <CreateDesk
+            return <CreateDeskDialog
                 projectId={projectId}
                 closeCreateMenu={closeCreateDeskDialog} />
         }

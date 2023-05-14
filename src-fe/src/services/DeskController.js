@@ -19,6 +19,14 @@ export default function DeskController(projectId) {
                 }).catch(err => {
                     throw err;
                 });
+        },
+        deleteById: function (deskId) {
+            return http().DELETE(`${baseUri}/${deskId}`)
+                .then(response => {
+                    return response;
+                }).catch(err => {
+                    throw err;
+                });
         }
     }
 }

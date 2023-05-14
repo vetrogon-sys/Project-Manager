@@ -61,6 +61,13 @@ export default function HttpService() {
             }).catch(err => {
                 throw err;
             });
+        },
+        DELETE: function (url) {
+            return instance.delete(`${baseApi}${url}`, { headers }).then(response => {
+                return response;
+            }).catch(err => {
+                throw err;
+            });
         }
     }
 }
