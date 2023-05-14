@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Typography, Avatar } from '@mui/material';
 import { Drawer, Box, Button, TextField } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
@@ -25,45 +25,52 @@ async function editTaskInDesk(deskId, taskId, taskDto) {
     };
 }
 
-export default function EditTask(desk, task, taskErrors, _clouseDialog, _setTaskErrors) {
-    let title = task.title;
-    let description = task.description;
-    let reqResolutionDate = task.reqResolutionDate;
-    let errors = {
+export default function EditTask(props) {
+    const [id, setId] = useState(props.editedTask.id);
+    const [title, setTitle] = useState(props.editedTask.title);
+    const [description, setDescription] = useState(props.editedTask.description);
+    const [reqResolutionDate, setReqResolutionDate] = useState(props.editedTask.reqResolutionDate);
+    const [taskErrors, setTaskErrors] = useState({
         titleMessage: null,
         descriptionMessage: null,
         reqResolutionDateMessage: null,
-    };
+    });
 
     const editTask = async (taskId, taskDto) => {
-        return await editTaskInDesk(desk.id, taskId, taskDto);
+        return await editTaskInDesk(props.desk.id, taskId, taskDto);
     }
 
     const handleTitleInput = (event) => {
-        title = event.target.value;
+        setTitle(event.target.value);
     }
 
     const handleDescriptionInput = (event) => {
-        description = event.target.value;
+        setDescription(event.target.value);
     }
 
     const isTaskValid = () => {
         const titleReg = new RegExp('(?=.{5,125}$)');
         if (!titleReg.test(title)) {
-            errors.titleMessage = 'Task title must be between 5 and 125 symbols';
+            taskErrors.titleMessage = 'Task title must be between 5 and 125 symbols';
+        } else {
+            taskErrors.titleMessage = null;
         }
 
         if (description && description.length > 512) {
-            errors.descriptionMessage = 'Task description must be less than 512 symbols';
-        }
-        if (reqResolutionDate && !reqResolutionDate.isAfter(dayjs())) {
-            errors.reqResolutionDateMessage = 'You can chose only day in future to resolute this task';
+            taskErrors.descriptionMessage = 'Task description must be less than 512 symbols';
+        } else {
+            taskErrors.descriptionMessage = null;
         }
 
-        if (errors.titleMessage
-            || errors.descriptionMessage
-            || errors.reqResolutionDateMessage) {
-            _setTaskErrors(errors);
+        if (reqResolutionDate && !dayjs(reqResolutionDate).isAfter(dayjs())) {
+            taskErrors.reqResolutionDateMessage = 'You can chose only day in future to resolute this task';
+        } else {
+            taskErrors.reqResolutionDateMessage = null;
+        }
+        
+        if (taskErrors.titleMessage
+            || taskErrors.descriptionMessage
+            || taskErrors.reqResolutionDateMessage) {
             return false;
         }
 
@@ -71,15 +78,16 @@ export default function EditTask(desk, task, taskErrors, _clouseDialog, _setTask
     }
 
     const isTaskEqualsCurrent = () => {
-        return title === task.title
-            && description === task.description
-            && reqResolutionDate === task.reqResolutionDate;
+        const editedTask = props.editedTask;
+        return title === editedTask.title
+            && description === editedTask.description
+            && reqResolutionDate.isSame(dayjs(editedTask.reqResolutionDate));
     }
 
     const acceptChanges = async () => {
 
         if (isTaskEqualsCurrent()) {
-            _clouseDialog();
+            props.clouseDialog();
         }
 
         if (!isTaskValid()) {
@@ -89,33 +97,30 @@ export default function EditTask(desk, task, taskErrors, _clouseDialog, _setTask
         const taskDto = {
             title: title,
             description: description,
-            creationDate: task.creationDate,
+            creationDate: props.editedTask.creationDate,
             reqResolutionDate: reqResolutionDate ? reqResolutionDate.format('YYYY-MM-DD') : null,
         };
 
-        const response = await editTask(task.id, taskDto);
+        const response = await editTask(id, taskDto);
         if (response.errors) {
+            let errors = {};
             errors.titleMessage = response.errors.title;
             errors.descriptionMessage = response.errors.description;
             errors.reqResolutionDateMessage = response.errors.reqResolutionDate;
-            _setTaskErrors(errors);
+            setTaskErrors(errors);
         } else {
-            title = null;
-            description = null;
-            reqResolutionDate = null;
-            _clouseDialog();
+            props.clouseDialog();
         }
     }
 
     const clouseDialog = () => {
-        _setTaskErrors([]);
-        _clouseDialog();
+        props.clouseDialog();
     }
 
     return (
         <Drawer
             open={true}
-            onClose={_clouseDialog}
+            onClose={props.clouseDialog}
             anchor='right'
             sx={{
                 backgroundColor: 'rgb(255, 255, 255, .2)',
@@ -133,19 +138,19 @@ export default function EditTask(desk, task, taskErrors, _clouseDialog, _setTask
                     sx={{
                         marginBottom: '1rem'
                     }}>
-                    Task_{task.id}
+                    Task_{id}
                 </Typography>
                 <Typography>Title:</Typography>
                 <TextField
                     fullWidth={true}
-                    defaultValue={task.title}
+                    defaultValue={title}
                     onInput={e => handleTitleInput(e)}
                     error={taskErrors && taskErrors.titleMessage ? true : false}
                     helperText={taskErrors ? taskErrors.titleMessage : ''}
                 />
                 <Typography>Description:</Typography>
                 <TextField
-                    defaultValue={task.description}
+                    defaultValue={description}
                     multiline
                     fullWidth={true}
                     rows={5}
@@ -158,8 +163,14 @@ export default function EditTask(desk, task, taskErrors, _clouseDialog, _setTask
                     dateAdapter={AdapterDayjs}
                 >
                     <DatePicker
-                        onChange={(newValue) => reqResolutionDate = newValue}
-                        defaultValue={task.reqResolutionDate ? dayjs(task.reqResolutionDate, 'YYYY-MM-DD') : dayjs()}
+                        onChange={(newValue) => setReqResolutionDate(newValue)}
+                        defaultValue={dayjs(reqResolutionDate, 'YYYY-MM-DD')}
+                        slotProps={{
+                            textField: {
+                                error: taskErrors && taskErrors.reqResolutionDateMessage ? true : false,
+                                helperText: taskErrors ? taskErrors.reqResolutionDateMessage : '',
+                            },
+                        }}
                     />
                 </LocalizationProvider>
                 <Box sx={{

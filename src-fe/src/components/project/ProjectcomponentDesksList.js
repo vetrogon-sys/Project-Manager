@@ -3,7 +3,7 @@ import { Box, Typography, Card, CardContent, CardActions, Button, IconButton, Av
 import PlusIcon from '@mui/icons-material/Add';
 import More from '@mui/icons-material/ReadMore.js';
 import CreateTaskDialog from './CreateTaskDialog.js';
-import editTaskDialog from './EditTaskDialog.js';
+import EditTaskDialog from './EditTaskDialog.js';
 import deskController from '../../services/DeskController';
 import taskController from '../../services/TaskController';
 import userController from '../../services/UserController.js';
@@ -357,11 +357,17 @@ export default function DesksList(projectId, _setLoading) {
                     </Button>
                 </Box>
 
-                {isCreateTaskDialogOpen ? <CreateTaskDialog
-                    desk={deskToChange}
-                    clouseDialog={clouseCreateTaskDialog} /> 
+                {isCreateTaskDialogOpen
+                    ? <CreateTaskDialog
+                        desk={deskToChange}
+                        clouseDialog={clouseCreateTaskDialog} />
                     : <div></div>}
-                {isEditTaskDialogOpen ? editTaskDialog(deskToChange, editedTask, taskErrors, clouseEditTaskDialog, setTaskErrors) : <div></div>}
+                {isEditTaskDialogOpen
+                    ? <EditTaskDialog
+                        desk={deskToChange}
+                        editedTask={editedTask}
+                        clouseDialog={clouseEditTaskDialog} />
+                    : <div></div>}
             </Box >
         )
     }

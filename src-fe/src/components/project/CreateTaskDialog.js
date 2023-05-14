@@ -92,14 +92,14 @@ export default function CreateTask(props) {
             errors.reqResolutionDateMessage = response.errors.reqResolutionDate;
             setTaskErrors(errors);
         } else {
-            props._clouseDialog();
+            props.clouseDialog();
         }
     }
 
     return (
         <Dialog
             open={true}
-            onClose={props._clouseDialog}
+            onClose={props.clouseDialog}
             fullWidth={true}
             sx={{
                 minWidth: '60rem',
