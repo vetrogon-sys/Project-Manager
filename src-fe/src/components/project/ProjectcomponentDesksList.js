@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Card, CardContent, CardActions, Button, IconButton, Avatar, Container } from '@mui/material';
+import { Box, Typography, Card, CardContent, CardActions, Button, IconButton, Avatar, Container, TextField } from '@mui/material';
 import PlusIcon from '@mui/icons-material/Add';
+import AddIcon from '@mui/icons-material/Add.js';
 import More from '@mui/icons-material/ReadMore.js';
 import CreateTaskDialog from './CreateTaskDialog.js';
 import EditTaskDialog from './EditTaskDialog.js';
 import deskController from '../../services/DeskController';
 import taskController from '../../services/TaskController';
 import userController from '../../services/UserController.js';
+import CreateDesk from './CreateDeskDialog.js';
 
 async function getDesks(projectId, setIsLoading) {
     if (setIsLoading) {
@@ -92,7 +94,7 @@ export default function DesksList(projectId, _setLoading) {
     const [assignedUsers, setAssignedUsers] = useState(new Map());
     const [isCreateTaskDialogOpen, setIsCreateTaskDialogOpen] = useState(false);
     const [isEditTaskDialogOpen, setIsEditTaskDialogOpen] = useState(false);
-    const [taskErrors, setTaskErrors] = useState(null);
+    const [isCreateDeskMode, setIsCreateDeskMode] = useState(false);
     const [editedTask, setEditedTask] = useState(null);
     const [deskToChange, setDeskToChange] = useState(null);
 
@@ -148,7 +150,7 @@ export default function DesksList(projectId, _setLoading) {
         if (desks) {
             fetchData();
         }
-    }, [isCreateTaskDialogOpen, isEditTaskDialogOpen])
+    }, [isCreateTaskDialogOpen, isEditTaskDialogOpen, isCreateDeskMode])
 
     const getDeskByName = (name) => {
         return desks.find(desk => desk.name === name);
@@ -159,8 +161,7 @@ export default function DesksList(projectId, _setLoading) {
         setIsCreateTaskDialogOpen(true);
     }
 
-    const clouseCreateTaskDialog = () => {
-        setTaskErrors(null);
+    const closeCreateTaskDialog = () => {
         setIsCreateTaskDialogOpen(false);
     }
 
@@ -170,8 +171,16 @@ export default function DesksList(projectId, _setLoading) {
         setIsEditTaskDialogOpen(true);
     }
 
-    const clouseEditTaskDialog = () => {
+    const closeEditTaskDialog = () => {
         setIsEditTaskDialogOpen(false);
+    }
+
+    const openCreateDeskDialog = () => {
+        setIsCreateDeskMode(true);
+    }
+
+    const closeCreateDeskDialog = () => {
+        setIsCreateDeskMode(false);
     }
 
     const onDragStart = (evt) => {
@@ -360,15 +369,33 @@ export default function DesksList(projectId, _setLoading) {
                 {isCreateTaskDialogOpen
                     ? <CreateTaskDialog
                         desk={deskToChange}
-                        clouseDialog={clouseCreateTaskDialog} />
+                        clouseDialog={closeCreateTaskDialog} />
                     : <div></div>}
                 {isEditTaskDialogOpen
                     ? <EditTaskDialog
                         desk={deskToChange}
                         editedTask={editedTask}
-                        clouseDialog={clouseEditTaskDialog} />
+                        clouseDialog={closeEditTaskDialog} />
                     : <div></div>}
             </Box >
+        )
+    }
+
+    const getCreateDeskElement = () => {
+
+    }
+
+    const getCreateDeskButton = () => {
+        if (isCreateDeskMode) {
+            return <CreateDesk
+                projectId={projectId}
+                closeCreateMenu={closeCreateDeskDialog} />
+        }
+        return (
+            <Button onClick={openCreateDeskDialog}>
+                <AddIcon />
+                Create desk
+            </Button>
         )
     }
 
@@ -386,7 +413,19 @@ export default function DesksList(projectId, _setLoading) {
                 marginLeft: 0,
             }}>
                 {desks.map((desk) => getDeskElement(desk))}
-            </Box>
+                <Box sx={{
+                    width: '15rem',
+                    margin: '.7rem',
+                    backgroundColor: 'rgb(245, 247, 252)',
+                    height: 'fit-content',
+                    maxHeight: '100%',
+                    borderRadius: '.3rem',
+                    display: 'flex',
+                    flexDirection: 'column'
+                }}>
+                    {getCreateDeskButton()}
+                </Box>
+            </Box >
         )
     }
 
