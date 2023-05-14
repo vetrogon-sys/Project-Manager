@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Card, CardContent, CardActions, Button, IconButton, Avatar } from '@mui/material';
+import { Box, Typography, Card, CardContent, CardActions, Button, IconButton, Avatar, Container } from '@mui/material';
 import PlusIcon from '@mui/icons-material/Add';
 import More from '@mui/icons-material/ReadMore.js';
-import createTaskDialog from './CreateTaskDialog.js';
+import CreateTaskDialog from './CreateTaskDialog.js';
 import editTaskDialog from './EditTaskDialog.js';
 import deskController from '../../services/DeskController';
 import taskController from '../../services/TaskController';
@@ -259,15 +259,9 @@ export default function DesksList(projectId, _setLoading) {
                 <CardContent sx={{
                     padding: '.5rem .5rem 0 .5rem'
                 }}>
-                    {/* <Typography sx={{ fontSize: 12 }} color="text.secondary" gutterBottom>
-                        Task
-                    </Typography> */}
                     <Typography sx={{ fontSize: 16 }} component="div" >
                         {task.title}
                     </Typography>
-                    {/* <Typography sx={{ fontSize: 12 }} color="text.secondary">
-                        adjective
-                    </Typography> */}
                     <Typography sx={{ fontSize: 14 }} color="text.secondary">
                         {task.description
                             ? (task.description.substring(0, 32) + (task.description.length > 32 ? '...' : ''))
@@ -307,15 +301,14 @@ export default function DesksList(projectId, _setLoading) {
             .map(task => getTaskElement(task));
     }
 
-    const getDeskContainer = (desk) => {
+    const getDeskElement = (desk) => {
 
         return (
             <Box
                 key={desk.id}
                 id={desk.name}
                 sx={{
-                    minWidth: '250',
-                    maxWidth: '500',
+                    width: '15rem',
                     margin: '.7rem',
                     backgroundColor: 'rgb(245, 247, 252)',
                     height: 'fit-content',
@@ -364,7 +357,10 @@ export default function DesksList(projectId, _setLoading) {
                     </Button>
                 </Box>
 
-                {isCreateTaskDialogOpen ? createTaskDialog(deskToChange, taskErrors, clouseCreateTaskDialog, setTaskErrors) : <div></div>}
+                {isCreateTaskDialogOpen ? <CreateTaskDialog
+                    desk={deskToChange}
+                    clouseDialog={clouseCreateTaskDialog} /> 
+                    : <div></div>}
                 {isEditTaskDialogOpen ? editTaskDialog(deskToChange, editedTask, taskErrors, clouseEditTaskDialog, setTaskErrors) : <div></div>}
             </Box >
         )
@@ -375,18 +371,25 @@ export default function DesksList(projectId, _setLoading) {
             return <div></div>;
         }
 
-        return desks.map(
-            (desk) => getDeskContainer(desk)
-        );
+        return (
+            <Box sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                width: '95%',
+                height: '90%',
+                marginLeft: 0,
+            }}>
+                {desks.map((desk) => getDeskElement(desk))}
+            </Box>
+        )
     }
 
     return (
         <div style={{
             marginTop: '1rem',
+            width: '100%',
             display: 'flex',
-            flexDirection: 'row',
-            width: '95%',
-            height: '90%'
+            justifyContent: 'flex-start',
         }}>
             {getDesksContainers()}
         </div>

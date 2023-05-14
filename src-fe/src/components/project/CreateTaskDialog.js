@@ -1,14 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Typography, Avatar } from '@mui/material';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs';
-import { List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import PlusIcon from '@mui/icons-material/Add';
-import CrossIcon from '@mui/icons-material/Remove';
-import projectController from '../../services/ProjectController';
 import TaskController from '../../services/TaskController';
 
 async function createTaskInDesk(deskId, taskDto) {
@@ -30,44 +25,55 @@ async function createTaskInDesk(deskId, taskDto) {
     };
 }
 
-export default function CreateTask(desk, taskErrors, _clouseDialog, _setTaskErrors) {
-    let title;
-    let description;
-    let reqResolutionDate;
-    let errors = {
+export default function CreateTask(props) {
+    const [title, setTitle] = useState(null);
+    const [description, setDescription] = useState(null);
+    const [reqResolutionDate, setReqResolutionDate] = useState(null);
+    const [taskErrors, setTaskErrors] = useState({
         titleMessage: null,
         descriptionMessage: null,
         reqResolutionDateMessage: null,
-    };
+    });
 
     const createTask = async (taskDto) => {
-        return await createTaskInDesk(desk.id, taskDto);
+        return await createTaskInDesk(props.desk.id, taskDto);
     }
 
     const handleTitleInput = (event) => {
-        title = event.target.value;
+        setTitle(event.target.value);
     }
 
     const handleDescriptionInput = (event) => {
-        description = event.target.value;
+        setDescription(event.target.value);
+    }
+
+    const cancelDialog = () => {
+        props.clouseDialog();
     }
 
     const acceptChanges = async () => {
         const titleReg = new RegExp('(?=.{5,125}$)');
         if (!titleReg.test(title)) {
-            errors.titleMessage = 'Task title must be between 5 and 125 symbols';
+            taskErrors.titleMessage = 'Task title must be between 5 and 125 symbols';
+        } else {
+            taskErrors.titleMessage = null;
         }
 
         if (description && description.length > 512) {
-            errors.descriptionMessage = 'Task description must be less than 512 symbols';
+            taskErrors.descriptionMessage = 'Task description must be less than 512 symbols';
+        } else {
+            taskErrors.descriptionMessage = null;
         }
+
         if (reqResolutionDate && !reqResolutionDate.isAfter(dayjs())) {
-            errors.reqResolutionDateMessage = 'You can chose only day in future to resolute this task';
+            taskErrors.reqResolutionDateMessage = 'You can chose only day in future to resolute this task';
+        } else {
+            taskErrors.reqResolutionDateMessage = null;
         }
-        if (errors.titleMessage
-            || errors.descriptionMessage
-            || errors.reqResolutionDateMessage) {
-            _setTaskErrors(errors);
+        
+        if (taskErrors.titleMessage
+            || taskErrors.descriptionMessage
+            || taskErrors.reqResolutionDateMessage) {
             return;
         }
 
@@ -80,26 +86,27 @@ export default function CreateTask(desk, taskErrors, _clouseDialog, _setTaskErro
 
         const response = await createTask(taskDto);
         if (response.errors) {
+            let errors = {};
             errors.titleMessage = response.errors.title;
             errors.descriptionMessage = response.errors.description;
             errors.reqResolutionDateMessage = response.errors.reqResolutionDate;
-            _setTaskErrors(errors);
+            setTaskErrors(errors);
         } else {
-            _clouseDialog();
+            props._clouseDialog();
         }
     }
 
     return (
         <Dialog
             open={true}
-            onClose={_clouseDialog}
+            onClose={props._clouseDialog}
             fullWidth={true}
             sx={{
                 minWidth: '60rem',
                 backgroundColor: 'rgb(255, 255, 255, .2)',
                 boxShadow: 'none',
             }}>
-            <DialogTitle>Create task in `{desk ? desk.name : ''}` Desk</DialogTitle>
+            <DialogTitle>Create task in `{props.desk ? props.desk.name : ''}` Desk</DialogTitle>
             <DialogContent>
                 <Typography>Title:</Typography>
                 <TextField
@@ -110,7 +117,6 @@ export default function CreateTask(desk, taskErrors, _clouseDialog, _setTaskErro
                 />
                 <Typography>Description:</Typography>
                 <TextField
-                    // label="Multiline"
                     multiline
                     fullWidth={true}
                     rows={5}
@@ -123,7 +129,7 @@ export default function CreateTask(desk, taskErrors, _clouseDialog, _setTaskErro
                     dateAdapter={AdapterDayjs}
                 >
                     <DatePicker
-                        onChange={(newValue) => reqResolutionDate = newValue}
+                        onChange={(newValue) => setReqResolutionDate(newValue)}
                         slotProps={{
                             textField: {
                                 error: taskErrors && taskErrors.reqResolutionDateMessage ? true : false,
@@ -135,7 +141,7 @@ export default function CreateTask(desk, taskErrors, _clouseDialog, _setTaskErro
             </DialogContent>
             <DialogActions>
                 <Button variant="contained" color="success" onClick={acceptChanges}>Accept</Button>
-                {/* <Button variant="contained" color="error" onClick={cancelDialog}>Cancel</Button> */}
+                <Button variant="contained" color="error" onClick={cancelDialog}>Cancel</Button>
             </DialogActions>
         </Dialog>
     );

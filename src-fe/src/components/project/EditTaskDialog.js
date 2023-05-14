@@ -93,7 +93,6 @@ export default function EditTask(desk, task, taskErrors, _clouseDialog, _setTask
             reqResolutionDate: reqResolutionDate ? reqResolutionDate.format('YYYY-MM-DD') : null,
         };
 
-        console.log(desk)
         const response = await editTask(task.id, taskDto);
         if (response.errors) {
             errors.titleMessage = response.errors.title;
@@ -101,6 +100,9 @@ export default function EditTask(desk, task, taskErrors, _clouseDialog, _setTask
             errors.reqResolutionDateMessage = response.errors.reqResolutionDate;
             _setTaskErrors(errors);
         } else {
+            title = null;
+            description = null;
+            reqResolutionDate = null;
             _clouseDialog();
         }
     }
@@ -137,7 +139,7 @@ export default function EditTask(desk, task, taskErrors, _clouseDialog, _setTask
                 <TextField
                     fullWidth={true}
                     defaultValue={task.title}
-                    onInput={handleTitleInput}
+                    onInput={e => handleTitleInput(e)}
                     error={taskErrors && taskErrors.titleMessage ? true : false}
                     helperText={taskErrors ? taskErrors.titleMessage : ''}
                 />
@@ -147,7 +149,7 @@ export default function EditTask(desk, task, taskErrors, _clouseDialog, _setTask
                     multiline
                     fullWidth={true}
                     rows={5}
-                    onInput={handleDescriptionInput}
+                    onInput={e => handleDescriptionInput(e)}
                     error={taskErrors && taskErrors.descriptionMessage ? true : false}
                     helperText={taskErrors ? taskErrors.descriptionMessage : ''}
                 />
