@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Card, CardContent, CardActions, Button, IconButton, Avatar, Container, TextField } from '@mui/material';
+import { Box, Typography, Card, CardContent, CardActions, Button, IconButton, Avatar, List, ListItem } from '@mui/material';
 import PlusIcon from '@mui/icons-material/Add';
 import AddIcon from '@mui/icons-material/Add.js';
 import MoreIcon from '@mui/icons-material/ReadMore.js';
@@ -325,87 +325,91 @@ export default function DesksList(projectId, _setLoading) {
     const getDeskElement = (desk) => {
 
         return (
-            <Box
-                key={desk.id}
-                id={desk.name}
-                sx={{
-                    width: '15rem',
-                    margin: '.7rem',
-                    backgroundColor: 'rgb(245, 247, 252)',
-                    height: 'fit-content',
-                    maxHeight: '100%',
-                    borderRadius: '.3rem',
-                    display: 'flex',
-                    flexDirection: 'column'
-                }
-                }
-                onDragLeave={(e) => onDragLeave(e)}
-                onDragEnter={(e) => onDragEnter(e)}
-                onDragEnd={(e) => onDragEnd(e)}
-                onDragOver={(e) => onDragOver(e)}
-                onDrop={(e) => onDrop(e, desk.name)}
-            >
+            <ListItem sx={{
+                alignItems: 'self-start',
+            }}>
                 <Box
+                    key={desk.id}
+                    id={desk.name}
                     sx={{
+                        width: '15rem',
+                        margin: '.7rem',
+                        backgroundColor: 'rgb(245, 247, 252)',
+                        height: 'fit-content',
+                        maxHeight: '100%',
+                        borderRadius: '.3rem',
                         display: 'flex',
-                        alignItems: 'center',
-                        width: '100%',
-                        backgroundColor: 'rgb(199, 208, 235)',
-                        minHeight: '3rem',
-                        fontWeight: 400
-                    }}
+                        flexDirection: 'column'
+                    }
+                    }
+                    onDragLeave={(e) => onDragLeave(e)}
+                    onDragEnter={(e) => onDragEnter(e)}
+                    onDragEnd={(e) => onDragEnd(e)}
+                    onDragOver={(e) => onDragOver(e)}
+                    onDrop={(e) => onDrop(e, desk.name)}
                 >
-                    <div style={{
-                        marginLeft: '1rem'
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            width: '100%',
+                            backgroundColor: 'rgb(199, 208, 235)',
+                            minHeight: '3rem',
+                            fontWeight: 400
+                        }}
+                    >
+                        <div style={{
+                            marginLeft: '1rem'
+                        }}>
+                            {desk.name}
+                        </div>
+                        <IconButton
+                            onClick={e => openDeleteDeskDialog(desk)}
+                            sx={{
+                                marginLeft: 'auto',
+                            }}>
+                            <DeleteIcon />
+                        </IconButton>
+                    </Box>
+                    <Box sx={{
+                        margin: '.5rem',
+                        overflow: "auto",
+                        height: '100%'
                     }}>
-                        {desk.name}
-                    </div>
-                    <IconButton
-                        onClick={e => openDeleteDeskDialog(desk)}
-                        sx={{
-                            marginLeft: 'auto',
-                        }}>
-                        <DeleteIcon />
-                    </IconButton>
-                </Box>
-                <Box sx={{
-                    margin: '.5rem',
-                    overflow: "auto",
-                    height: '100%'
-                }}>
-                    {getDeskTasks(desk)}
-                </Box>
-                <Box sx={{
-                    alignSelf: 'flex-end',
-                }}>
-                    <Button
-                        onClick={e => openCreateTaskDialog(desk)}
-                        sx={{
-                            margin: '.5rem',
-                        }}>
-                        <PlusIcon />
-                        Create task
-                    </Button>
-                </Box>
+                        {getDeskTasks(desk)}
+                    </Box>
+                    <Box sx={{
+                        alignSelf: 'flex-end',
+                    }}>
+                        <Button
+                            onClick={e => openCreateTaskDialog(desk)}
+                            sx={{
+                                margin: '.5rem',
+                            }}>
+                            <PlusIcon />
+                            Create task
+                        </Button>
+                    </Box>
 
-                {isCreateTaskDialogOpen
-                    ? <CreateTaskDialog
-                        desk={deskToChange}
-                        clouseDialog={closeCreateTaskDialog} />
-                    : null}
-                {isEditTaskDialogOpen
-                    ? <EditTaskDialog
-                        desk={deskToChange}
-                        editedTask={editedTask}
-                        clouseDialog={closeEditTaskDialog} />
-                    : null}
-                {isDeleteDeskDialogOpen
-                    ? <DeleteDeskDialog
-                        projectId={projectId}
-                        desk={deskToChange}
-                        closeDialog={closeDeleteDeskDialog} />
-                    : null}
-            </Box >
+                    {isCreateTaskDialogOpen
+                        ? <CreateTaskDialog
+                            desk={deskToChange}
+                            clouseDialog={closeCreateTaskDialog} />
+                        : null}
+                    {isEditTaskDialogOpen
+                        ? <EditTaskDialog
+                            desk={deskToChange}
+                            editedTask={editedTask}
+                            clouseDialog={closeEditTaskDialog} />
+                        : null}
+                    {isDeleteDeskDialogOpen
+                        ? <DeleteDeskDialog
+                            projectId={projectId}
+                            desk={deskToChange}
+                            closeDialog={closeDeleteDeskDialog} />
+                        : null}
+                </Box >
+            </ListItem>
         )
     }
 
@@ -433,22 +437,33 @@ export default function DesksList(projectId, _setLoading) {
                 display: 'flex',
                 flexDirection: 'row',
                 width: '95%',
-                height: '90%',
                 marginLeft: 0,
+                position: 'relative'
             }}>
-                {desks.map((desk) => getDeskElement(desk))}
-                <Box sx={{
-                    width: '15rem',
-                    margin: '.7rem',
-                    backgroundColor: 'rgb(245, 247, 252)',
-                    height: 'fit-content',
-                    maxHeight: '100%',
-                    borderRadius: '.3rem',
+                <List sx={{
                     display: 'flex',
-                    flexDirection: 'column'
+                    flexDirection: 'row',
+                    alignContent: 'flex-start',
+                    justifyContent: 'flex-start',
                 }}>
-                    {getCreateDeskButton()}
-                </Box>
+                    {desks.map((desk) => getDeskElement(desk))}
+                    <ListItem sx={{
+                        alignItems: 'self-start'
+                    }}>
+                        <Box sx={{
+                            width: '15rem',
+                            margin: '.7rem',
+                            backgroundColor: 'rgb(245, 247, 252)',
+                            height: 'fit-content',
+                            maxHeight: '100%',
+                            borderRadius: '.3rem',
+                            display: 'flex',
+                            flexDirection: 'column'
+                        }}>
+                            {getCreateDeskButton()}
+                        </Box>
+                    </ListItem>
+                </List>
             </Box >
         )
     }

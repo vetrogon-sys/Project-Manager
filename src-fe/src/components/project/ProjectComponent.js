@@ -23,10 +23,11 @@ export default function ProjectComponent() {
             style={{
                 display: 'flex',
                 flexDirection: 'column',
-                height: '100vh',
+                height: '90vh',
             }}>
             <div style={{
-                width: '100%'
+                width: '100%',
+                position: 'fixed',
             }}>
                 {projectComponentHeader(projectId)}
             </div>
@@ -34,7 +35,8 @@ export default function ProjectComponent() {
                 width: '100%',
                 display: 'flex',
                 justifyContent: 'center',
-                height: '85%'
+                height: '95%',
+                marginTop: '5rem',
             }}>
                 {desksList(projectId, setLoading)}
             </div>
