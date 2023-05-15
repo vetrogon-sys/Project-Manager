@@ -2,6 +2,7 @@ package com.example.service.impl;
 
 import com.example.entity.Desk;
 import com.example.entity.Task;
+import com.example.entity.User;
 import com.example.repository.TaskRepository;
 import com.example.service.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -58,6 +60,25 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Page<Task> getAllFromDeskById(Long deskId, Pageable pageable) {
         return taskRepository.findAllByDeskIdEquals(deskId, pageable);
+    }
+
+    @Override
+    public void assignUserToTaskWithId(Long taskId, User user) {
+        Task task = getById(taskId);
+        task.setAssignedUser(user);
+        update(task);
+    }
+
+    @Override
+    public void unassignUserFromTaskWithId(Long taskId) {
+        Task task = getById(taskId);
+        task.setAssignedUser(null);
+        update(task);
+    }
+
+    @Override
+    public void deleteAllIn(List<Task> tasks) {
+        taskRepository.deleteAll(tasks);
     }
 
 }

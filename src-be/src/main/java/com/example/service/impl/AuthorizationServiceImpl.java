@@ -7,6 +7,7 @@ import com.example.entity.User;
 import com.example.exeptions.InvalidCredentialsException;
 import com.example.mapper.UserMapper;
 import com.example.security.service.TokenProvider;
+import com.example.service.AuthorityService;
 import com.example.service.AuthorizationService;
 import com.example.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -14,18 +15,19 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class AuthorizationServiceImpl implements AuthorizationService {
 
-    public static final SimpleGrantedAuthority DEFAULT_USER_ROLE_AUTHORITY = new SimpleGrantedAuthority("ROLE_USER");
     private final UserService userService;
+    private final AuthorityService authorityService;
     private final TokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
     private final UserMapper userMapper;
@@ -33,18 +35,16 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     @Override
     public JWTTokenDto signIn(AuthorizationDto authorizationDto) {
+        String email = authorizationDto.getEmail();
+        List<GrantedAuthority> userAuthorities = getUserAuthoritiesByEmail(email);
+        Authentication authentication
+              = new UsernamePasswordAuthenticationToken(email, authorizationDto.getPassword(), userAuthorities);
         try {
-            String email = authorizationDto.getEmail();
-            Authentication authentication
-                  = new UsernamePasswordAuthenticationToken(
-                  email,
-                  authorizationDto.getPassword()
-            );
             authenticationManager.authenticate(authentication);
-            return new JWTTokenDto(tokenProvider.createToken(email, List.of(DEFAULT_USER_ROLE_AUTHORITY)));
         } catch (AuthenticationException e) {
             throw new InvalidCredentialsException("Authentication exception. Check passed credentials");
         }
+        return new JWTTokenDto(tokenProvider.createToken(email, userAuthorities));
     }
 
     @Override
@@ -58,12 +58,16 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
         userService.save(user);
 
-        return new JWTTokenDto(tokenProvider.createToken(user.getEmail(), List.of(DEFAULT_USER_ROLE_AUTHORITY)));
+        return new JWTTokenDto(tokenProvider.createToken(user.getEmail(), Collections.emptyList()));
     }
 
     @Override
     public JWTTokenDto refreshAuthentication(String email) {
-        return new JWTTokenDto(tokenProvider.createToken(email, List.of(DEFAULT_USER_ROLE_AUTHORITY)));
+        return new JWTTokenDto(tokenProvider.createToken(email, getUserAuthoritiesByEmail(email)));
+    }
+
+    private List<GrantedAuthority> getUserAuthoritiesByEmail(String email) {
+        return authorityService.getAllByUserEmailAsGrantedAuthorities(email);
     }
 
 }

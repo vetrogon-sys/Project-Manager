@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DeskServiceImpl implements DeskService {
 
+    public static final String DESK_WITH_ID_NOT_FOUND_MESSAGE = "Can't find Desk with id: %d";
     private final DeskRepository deskRepository;
 
     @Override
@@ -36,7 +37,7 @@ public class DeskServiceImpl implements DeskService {
     @Override
     public Desk update(Desk desk) {
         if (!deskRepository.existsById(desk.getId())) {
-            throw new EntityNotFoundException(String.format("Can't find Desk with id: %d", desk.getId()));
+            throw new EntityNotFoundException(String.format(DESK_WITH_ID_NOT_FOUND_MESSAGE, desk.getId()));
         }
         return deskRepository.save(desk);
     }
@@ -44,7 +45,7 @@ public class DeskServiceImpl implements DeskService {
     @Override
     public Desk deleteTaskInDeskById(Long deskId, Task task) {
         Desk desk = getByIdWithTasks(deskId);
-        if (!desk.removeTask(task)) {
+        if (Boolean.FALSE.equals(desk.removeTask(task))) {
             throw new WrongArgumentException(String.format("Task %s doesn't exist in desk %s", task.getTitle(), desk.getName()));
         }
 
@@ -59,15 +60,23 @@ public class DeskServiceImpl implements DeskService {
     }
 
     @Override
+    public Desk removeTaskFromDeskById(Long deskId, Task task) {
+        Desk desk = getByIdWithTasks(deskId);
+        desk.removeTask(task);
+        task.setDesk(null);
+        return forceUpdate(desk);
+    }
+
+    @Override
     public Desk getById(Long deskId) {
         return deskRepository.findById(deskId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Can't find Desk with id: %d", deskId)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(DESK_WITH_ID_NOT_FOUND_MESSAGE, deskId)));
     }
 
     @Override
     public Desk getByIdWithTasks(Long deskId) {
         return deskRepository.findWithTasksById(deskId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Can't find Desk with id: %d", deskId)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(DESK_WITH_ID_NOT_FOUND_MESSAGE, deskId)));
     }
 
     @Override

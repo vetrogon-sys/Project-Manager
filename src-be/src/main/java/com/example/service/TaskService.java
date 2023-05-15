@@ -2,8 +2,11 @@ package com.example.service;
 
 import com.example.entity.Desk;
 import com.example.entity.Task;
+import com.example.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface TaskService {
 
@@ -21,4 +24,9 @@ public interface TaskService {
 
     Page<Task> getAllFromDeskById(Long deskId, Pageable pageable);
 
+    void assignUserToTaskWithId(Long taskId, User user);
+
+    void unassignUserFromTaskWithId(Long taskId);
+
+    void deleteAllIn(List<Task> tasks);
 }

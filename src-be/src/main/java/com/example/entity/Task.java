@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,7 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
-import javax.persistence.NamedEntityGraphs;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -29,15 +28,14 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@NamedEntityGraphs({
-        @NamedEntityGraph(
-                name = "task-with-desk",
-                attributeNodes = {@NamedAttributeNode("desk")}
-        )
-})
+@NamedEntityGraph(
+      name = "task-with-desk",
+      attributeNodes = {@NamedAttributeNode("desk")}
+)
 public class Task {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "pk_task_sequence", sequenceName = "task_id_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pk_task_sequence")
     private Long id;
 
     private String title;
@@ -46,30 +44,33 @@ public class Task {
     private LocalDate creationDate;
     private LocalDate reqResolutionDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_id", referencedColumnName = "id")
     private User assignedUser;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "desk_id", nullable = false, referencedColumnName = "id")
     private Desk desk;
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Task task = (Task) o;
         return Objects.equals(id, task.id) &&
-                Objects.equals(title, task.title) &&
-                Objects.equals(description, task.description) &&
-                Objects.equals(creationDate, task.creationDate) &&
-                Objects.equals(reqResolutionDate, task.reqResolutionDate) &&
-                Objects.equals(desk, task.desk);
+              Objects.equals(title, task.title) &&
+              Objects.equals(description, task.description) &&
+              Objects.equals(creationDate, task.creationDate) &&
+              Objects.equals(reqResolutionDate, task.reqResolutionDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, description, creationDate, reqResolutionDate, desk);
+        return Objects.hash(id, title, description, creationDate, reqResolutionDate);
     }
 
     public void fillRequiredFields(TaskDto from) {

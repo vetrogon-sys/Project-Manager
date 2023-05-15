@@ -12,6 +12,8 @@ public interface TasksInDeskService {
 
     void deleteTaskInDesk(Long deskId, Long taskId);
 
+    void deleteAllTasksFromDesk(Long deskId);
+
     Page<TaskDto> getTasksFromDesk(Long deskId, Pageable pageable);
 
     void updateTask(Long taskId, TaskDto taskDto);

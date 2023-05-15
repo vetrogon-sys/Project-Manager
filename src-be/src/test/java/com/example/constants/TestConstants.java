@@ -1,21 +1,24 @@
 package com.example.constants;
 
 import com.example.dto.DeskDto;
+import com.example.dto.ProjectDto;
 import com.example.dto.TaskDto;
 import com.example.dto.UserDto;
 import com.example.entity.Desk;
 import com.example.entity.Project;
 import com.example.entity.Task;
 import com.example.entity.User;
+import com.example.entity.security.Authority;
+import com.example.entity.security.SecurityOpportunity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class TestConstants {
     public static final String EXISTING_EMAIL = "user_test@gmail.com";
     public static final String NON_EXISTED_EMAIL = "non-existed-email@gmail.com";
+    public static final String EXISTING_AUTHORITY_SIGNATURE = "user_1_project_1_Create_Delete";
 
     public static User getUserEqualsToExisting() {
         User user = new User();
@@ -137,6 +140,14 @@ public class TestConstants {
         return task;
     }
 
+    public static List<SecurityOpportunity> getSecurityOpportunities() {
+        SecurityOpportunity opportunity = new SecurityOpportunity();
+        opportunity.setOpportunity("Create");
+        SecurityOpportunity opportunity2 = new SecurityOpportunity();
+        opportunity2.setOpportunity("Delete");
+        return List.of(opportunity, opportunity2);
+    }
+
     public static Desk getDesk() {
         Desk desk = new Desk();
         desk.setId(1L);
@@ -159,4 +170,18 @@ public class TestConstants {
         return project;
     }
 
+    public static Authority getExistingAuthority() {
+        Authority expectedAuthority = new Authority();
+        expectedAuthority.setAssigned(getUserEqualsToExisting());
+        expectedAuthority.setRelatedProject(getProjectWithId(1L));
+        expectedAuthority.setOpportunities(getSecurityOpportunities());
+        expectedAuthority.setSignature(EXISTING_AUTHORITY_SIGNATURE);
+        return expectedAuthority;
+    }
+
+    public static ProjectDto getProjectDtoWithoutId() {
+        ProjectDto project = new ProjectDto();
+        project.setName("Test project");
+        return project;
+    }
 }

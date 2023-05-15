@@ -1,7 +1,10 @@
-DELETE TASKS CASCADE;
-DELETE DESKS CASCADE;
-DELETE PROJECTS CASCADE;
-DELETE USERS CASCADE;
+--DELETE TASKS CASCADE;
+--DELETE DESKS CASCADE;
+--DELETE authority_opportunities CASCADE;
+--DELETE authorities CASCADE;
+--DELETE security_opportunities CASCADE;
+--DELETE PROJECTS CASCADE;
+--DELETE USERS CASCADE;
 
 INSERT INTO USERS (id, email, first_name, last_name)
     VALUES (1, 'user_test@gmail.com', 'Adam', 'Green');
@@ -31,3 +34,16 @@ INSERT INTO TASKS (id, title, desk_id)
            (12, 'Tested task 12', 4),
            (13, 'Tested task 13', 4),
            (14, 'Tested task 14', 4);
+
+insert into security_opportunities (opportunity)
+    values ('Create'),
+           ('Delete');
+
+insert into authorities (id, signature, assigned_user_id, related_project_id)
+    values (1, 'user_1_project_1_Create_Delete', 1, 1),
+           (2, 'user_1_project_2_Create', 1, 2);
+
+insert into authority_opportunities (authority_id, opportunity_id)
+    values (1, 'Create'),
+           (1, 'Delete'),
+           (2, 'Create');

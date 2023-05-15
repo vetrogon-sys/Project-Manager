@@ -42,3 +42,8 @@ create table USER_PROJECTS (
     constraint fk_project_id foreign key (project_id) references PROJECTS(id),
     constraint fk_user_id foreign key (user_id) references USERS(id)
 );
+
+create sequence user_id_sequence start 1;
+create sequence project_id_sequence start 1;
+create sequence desk_id_sequence start 1;
+create sequence task_id_sequence start 1;

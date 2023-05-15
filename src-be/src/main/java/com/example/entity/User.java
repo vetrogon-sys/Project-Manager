@@ -13,9 +13,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Table(name = "users")
 @Entity
@@ -26,7 +27,8 @@ import java.util.Objects;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "pk_user_sequence", sequenceName = "user_id_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pk_user_sequence")
     private Long id;
     @Column(name = "email", unique = true)
     private String email;
@@ -38,10 +40,13 @@ public class User {
     private String lastName;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "creator", orphanRemoval = true)
-    private List<Project> ownProjects;
+    private Set<Project> ownProjects;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "assignedUsers")
-    private List<Project> assignedProjects;
+    private Set<Project> assignedProjects;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "assignedUser")
+    private Set<Task> assignedTasks;
 
     @Override
     public boolean equals(Object o) {
