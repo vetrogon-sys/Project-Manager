@@ -1,7 +1,6 @@
 package com.example.service.impl;
 
 import com.example.dto.ProjectDto;
-import com.example.dto.UsersIdsList;
 import com.example.entity.Project;
 import com.example.entity.User;
 import com.example.mapper.ProjectMapper;
@@ -81,10 +80,10 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void removeAssignedUsersWithIdsFromProjectWithId(UsersIdsList idsList, Long projectId) {
+    public void removeAssignedUsersWithIdsFromProjectWithId(List<Long> idsList, Long projectId) {
         Project project = getProjectWithAssignedUsersById(projectId);
 
-        project.removeAssignedUsersWithIds(idsList.getUserIds());
+        project.removeAssignedUsersWithIds(idsList);
 
         projectRepository.save(project);
     }

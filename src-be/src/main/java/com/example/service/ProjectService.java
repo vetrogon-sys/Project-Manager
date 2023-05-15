@@ -1,7 +1,6 @@
 package com.example.service;
 
 import com.example.dto.ProjectDto;
-import com.example.dto.UsersIdsList;
 import com.example.entity.Project;
 import com.example.entity.User;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +27,7 @@ public interface ProjectService {
 
     boolean existById(Long projectId);
 
-    void removeAssignedUsersWithIdsFromProjectWithId(UsersIdsList idsList, Long projectId);
+    void removeAssignedUsersWithIdsFromProjectWithId(List<Long> idsList, Long projectId);
 
     void assignUsersToProjectById(Long projectId, List<User> users);
 }
