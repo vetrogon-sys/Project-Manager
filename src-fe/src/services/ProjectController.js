@@ -29,10 +29,7 @@ export default function ProjectController() {
                 });
         },
         unassignUsers: function (projectId, usersIds) {
-            const userIdsList = {
-                userIds: usersIds
-            }
-            return http().PATCH(`${baseUri}/${projectId}/unassign/users`, userIdsList)
+            return http().DELETE(`${baseUri}/${projectId}/users/${usersIds.join()}`)
                 .then(response => {
                     return response;
                 }).catch(err => {
@@ -40,7 +37,7 @@ export default function ProjectController() {
                 });
         },
         assignUsers: function (projectId, usersIds) {
-            return http().PATCH(`${baseUri}/${projectId}/assign/users/${usersIds.join()}`, null)
+            return http().PATCH(`${baseUri}/${projectId}/users/${usersIds.join()}`, null)
                 .then(response => {
                     return response;
                 }).catch(err => {

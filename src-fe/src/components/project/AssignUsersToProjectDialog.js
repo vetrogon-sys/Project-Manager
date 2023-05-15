@@ -52,6 +52,7 @@ export default function AssignUsersToProjectDialog(project, usersToAssign, unass
         return unassignedUsers.users
             .map(user => (
                 <ListItem
+                    key={user.id}
                     sx={{
                         backgroundColor: usersToAssign.includes(user) ? 'rgb(76, 224, 113);' : '',
                     }}

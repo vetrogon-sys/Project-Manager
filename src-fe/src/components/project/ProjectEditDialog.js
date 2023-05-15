@@ -78,6 +78,7 @@ export default function ProjectEditDialog(project, assignedUsers, usersToRemove,
         return assignedUsers
             .map((user, key) => (
                 <ListItem
+                    key={user.id}
                     sx={{
                         backgroundColor: usersToRemove.includes(user) ? 'rgb(224, 52, 52);' : '',
                     }}
