@@ -44,6 +44,8 @@ public class TasksInDeskServiceImpl implements TasksInDeskService {
 
     @Override
     public void deleteTaskInDesk(Long deskId, Long taskId) {
+        Task task = taskService.getById(taskId);
+        deskService.removeTaskFromDeskById(deskId, task);
         taskService.deleteById(taskId);
     }
 
