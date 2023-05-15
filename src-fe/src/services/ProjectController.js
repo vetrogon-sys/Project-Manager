@@ -44,12 +44,20 @@ export default function ProjectController() {
                     throw err;
                 });
         },
-        updateProject: function(projectId, project) {
+        updateProject: function (projectId, project) {
             const projectDto = {
                 id: projectId,
                 descrition: project.descrition
             }
             return http().PATCH(`${baseUri}/${projectId}`, projectDto)
+                .then(response => {
+                    return response;
+                }).catch(err => {
+                    throw err;
+                });
+        },
+        create: function (projectDto) {
+            return http().POST(`${baseUri}`, projectDto)
                 .then(response => {
                     return response;
                 }).catch(err => {
