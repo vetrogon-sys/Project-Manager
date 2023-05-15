@@ -6,6 +6,8 @@ import com.example.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface TaskService {
 
     Task create(Task task);
@@ -26,4 +28,5 @@ public interface TaskService {
 
     void unassignUserFromTaskWithId(Long taskId);
 
+    void deleteAllIn(List<Task> tasks);
 }
