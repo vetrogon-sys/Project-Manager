@@ -13,7 +13,7 @@ public interface ProjectService {
 
     ProjectDto getByIdAsDto(Long projectId);
 
-    ProjectDto create(Project project);
+    Project create(Project project);
 
     ProjectDto update(Project project);
 
