@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -49,7 +48,7 @@ public class Task {
     @JoinColumn(name = "assigned_id", referencedColumnName = "id")
     private User assignedUser;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "desk_id", nullable = false, referencedColumnName = "id")
     private Desk desk;
 
@@ -66,13 +65,12 @@ public class Task {
               Objects.equals(title, task.title) &&
               Objects.equals(description, task.description) &&
               Objects.equals(creationDate, task.creationDate) &&
-              Objects.equals(reqResolutionDate, task.reqResolutionDate) &&
-              Objects.equals(desk, task.desk);
+              Objects.equals(reqResolutionDate, task.reqResolutionDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, description, creationDate, reqResolutionDate, desk);
+        return Objects.hash(id, title, description, creationDate, reqResolutionDate);
     }
 
     public void fillRequiredFields(TaskDto from) {

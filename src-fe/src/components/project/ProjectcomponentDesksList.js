@@ -90,6 +90,10 @@ async function moveTaskToAnotherDesk(taskId, currentDeskId, updatedDeskId) {
     await taskController(currentDeskId).moveTaskToAnotherDesk(taskId, updatedDeskId);
 }
 
+async function removeTaskByIdInDeskWithId(deskId, taskId) {
+    taskController(deskId).deleteById(taskId);
+}
+
 export default function DesksList(projectId, projectAssignedUsers, _setLoading) {
     const [desks, setDesks] = useState();
     const [tasks, setTasks] = useState(new Map());
@@ -175,6 +179,12 @@ export default function DesksList(projectId, projectAssignedUsers, _setLoading) 
 
     const closeDeleteDeskDialog = () => {
         setIsDeleteDeskDialogOpen(false);
+    }
+
+    const deleteTaskInDesk = (event, task) => {
+        const desk = getDeskByName(event.currentTarget.parentElement.parentElement.parentElement.parentElement.parentElement.id);
+        
+        removeTaskByIdInDeskWithId(desk.id, task.id);
     }
 
     const onepnEditTaskDialogForTask = (event, task) => {
@@ -294,12 +304,20 @@ export default function DesksList(projectId, projectAssignedUsers, _setLoading) 
                     display: 'flex',
                     justifyContent: 'space-between'
                 }}>
-                    <IconButton
-                        className='lorn-more-ico-button'
-                        onClick={e => onepnEditTaskDialogForTask(e, task)}
-                        size='small'>
-                        <MoreIcon />
-                    </IconButton>
+                    <Box>
+                        <IconButton
+                            className='lorn-more-ico-button'
+                            onClick={e => onepnEditTaskDialogForTask(e, task)}
+                            size='small'>
+                            <MoreIcon />
+                        </IconButton>
+                        <IconButton
+                            className='remove-ico-button'
+                            onClick={e => deleteTaskInDesk(e, task)}
+                            size='small'>
+                            <DeleteIcon />
+                        </IconButton>
+                    </Box>
                     {assignedUsers.get(task.id)
                         ? getAvatarForUser(assignedUsers.get(task.id))
                         : <div></div>}

@@ -19,6 +19,8 @@ public interface DeskService {
 
     Desk addTaskToDeskById(Long deskId, Task task);
 
+    Desk removeTaskFromDeskById(Long deskId, Task task);
+
     Desk getById(Long deskId);
 
     Desk getByIdWithTasks(Long deskId);

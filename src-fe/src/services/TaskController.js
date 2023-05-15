@@ -45,7 +45,15 @@ export default function TaskController(deskId) {
                 });
         },
         unassignUserFromTask: function (taskId) {
-            return http().DELETE(`${baseUri}/${taskId}/users`, null)
+            return http().DELETE(`${baseUri}/${taskId}/users`)
+                .then(response => {
+                    return response;
+                }).catch(err => {
+                    throw err;
+                });
+        },
+        deleteById: function (taskId) {
+            return http().DELETE(`${baseUri}/${taskId}`)
                 .then(response => {
                     return response;
                 }).catch(err => {
