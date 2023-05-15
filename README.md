@@ -69,3 +69,18 @@
         - open command line
         - run `mvn spring-boot:run -Dspring.profiles.active=local` command
 
+- Start React front-end application
+    -
+  - Using Docker
+    - 
+      - open `./src-fe` directory
+      - run `npm install` to download required dependencies
+      - run `npm start` to start application
+    
+  - Without Docker
+    - 
+      - run spring-boot back-end application
+      - open `./src-fe/src/setupProxy.js` file and change `pm-be` host to `localhost`
+      - go to `./src-fe` directory
+      - run `npm install` to download required dependencies
+      - run `npm start` to start application

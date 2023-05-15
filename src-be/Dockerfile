@@ -1,6 +1,6 @@
 FROM openjdk:11
 
-WORKDIR /app
+WORKDIR /app/be
 
 COPY .mvn/ .mvn
 COPY mvnw ./
