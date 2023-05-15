@@ -1,55 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import http from '../services/http/HttpService';
-import { Box, Avatar, FormControl, Typography } from '@mui/material';
+import { Box, Avatar, FormControl, Typography, Menu, MenuItem, IconButton } from '@mui/material';
+import userController from '../services/UserController';
+import tokenStorage from '../storage/AuthenticationTokenStorage';
 
-function getAboutMeInformation() {
-
-    return http().GET('/users/aboutme')
+async function getAboutMeInformation() {
+    const data = await userController().aboutMe()
         .then((response) => {
-            if (response.status === 403) {
-                return;
-            }
             return response.data;
         })
         .catch((err) => {
             return err.response;
         });
-}
 
-async function findMe() {
-    const aboutMeResponse = await getAboutMeInformation();
-
-    return aboutMeResponse;
-
-}
-
-function getAvatarForUser(user) {
-
-    return (
-        <Avatar
-            alt={`${user.firstName} ${user.lastname}`} />
-    );
-}
-
-function getDefaultAvatar() {
-    return (
-        <Avatar />
-    );
+    return {
+        user: data,
+    };
 }
 
 export default function Header() {
 
     const [user, setUser] = useState(null);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
     useEffect(() => {
-        const fetchData = () => {
-            const response = findMe();
+        const fetchData = async () => {
+            const response = await getAboutMeInformation();
 
-            setUser(response);
+            setUser(response.user);
         };
 
         fetchData();
     }, [])
+
+    const handleOpenUserMenu = () => {
+        setIsUserMenuOpen(!isUserMenuOpen);
+    };
+
+    const handleCloseUserMenu = () => {
+        setIsUserMenuOpen(false);
+    }
+
+    const logout = () => {
+        tokenStorage().clearToken();
+        window.location.href = '/login';
+    }
+
+    const getAvatarForCurrentUser = () => {
+        return (
+            <IconButton onClick={handleOpenUserMenu}>
+                <Avatar
+                    alt={`${user.firstName} ${user.lastName}`} />
+            </IconButton>
+        );
+    }
 
     return (
         <Box
@@ -83,8 +86,30 @@ export default function Header() {
                 }}
                 variant="outlined">
                 {user !== null
-                    ? getAvatarForUser(user)
-                    : getDefaultAvatar()}
+                    ? getAvatarForCurrentUser()
+                    : null}
+                <Menu
+                    sx={{ mt: '45px' }}
+                    anchorEl={isUserMenuOpen}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }}
+                    open={isUserMenuOpen}
+                    onClose={handleCloseUserMenu}
+                >
+                    <MenuItem key={'cred'} onClick={handleCloseUserMenu}>
+                        <Typography textAlign="center">{user ? (user.firstName + ' ' + user.lastName) : null}</Typography>
+                    </MenuItem>
+                    <MenuItem key={'logout'} onClick={logout}>
+                        <Typography textAlign="center">Logout</Typography>
+                    </MenuItem>
+                </Menu>
             </FormControl>
 
         </Box>)
