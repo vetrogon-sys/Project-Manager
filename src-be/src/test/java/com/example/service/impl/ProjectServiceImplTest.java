@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -87,18 +88,14 @@ public class ProjectServiceImplTest {
     @Test
     public void create() {
         Project projectWithoutId = TestConstants.getProjectWithoutId();
-        ProjectDto projectDtoWithoutId = TestConstants.getProjectDtoWithoutId();
 
         when(projectRepository.save(projectWithoutId))
               .thenAnswer(i -> i.getArguments()[0]);
-        when(projectMapper.projectToProjectDto(any(Project.class)))
-              .thenReturn(projectDtoWithoutId);
 
-        ProjectDto actualProject = projectService.create(projectWithoutId);
+        Project actualProject = projectService.create(projectWithoutId);
 
-        verify(projectRepository, times(1)).save(projectWithoutId);
-        verify(projectMapper, times(1)).projectToProjectDto(any(Project.class));
-        assertEquals(projectDtoWithoutId, actualProject);
+        verify(projectRepository, times(1)).save(eq(projectWithoutId));
+        assertEquals(projectWithoutId, actualProject);
     }
 
     @Test
