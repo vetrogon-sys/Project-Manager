@@ -90,7 +90,7 @@ async function moveTaskToAnotherDesk(taskId, currentDeskId, updatedDeskId) {
     await taskController(currentDeskId).moveTaskToAnotherDesk(taskId, updatedDeskId);
 }
 
-export default function DesksList(projectId, _setLoading) {
+export default function DesksList(projectId, projectAssignedUsers, _setLoading) {
     const [desks, setDesks] = useState();
     const [tasks, setTasks] = useState(new Map());
     const [assignedUsers, setAssignedUsers] = useState(new Map());
@@ -128,7 +128,7 @@ export default function DesksList(projectId, _setLoading) {
 
         const interval = setInterval(() => {
             fetchData(false);
-        }, 10000)
+        }, 100000000)
         return () => {
             clearInterval(interval);
         }
@@ -325,14 +325,18 @@ export default function DesksList(projectId, _setLoading) {
     const getDeskElement = (desk) => {
 
         return (
-            <ListItem sx={{
-                alignItems: 'self-start',
-            }}>
+            <ListItem
+                key={desk.id}
+                sx={{
+                    alignItems: 'self-start',
+                    paddingLeft: 0,
+                    paddingRight: 0
+                }}>
                 <Box
                     key={desk.id}
                     id={desk.name}
                     sx={{
-                        width: '15rem',
+                        width: '16rem',
                         margin: '.7rem',
                         backgroundColor: 'rgb(245, 247, 252)',
                         height: 'fit-content',
@@ -400,7 +404,9 @@ export default function DesksList(projectId, _setLoading) {
                         ? <EditTaskDialog
                             desk={deskToChange}
                             editedTask={editedTask}
-                            clouseDialog={closeEditTaskDialog} />
+                            clouseDialog={closeEditTaskDialog}
+                            assignedUser={assignedUsers.get(editedTask.id)}
+                            projectAssignedUsers={projectAssignedUsers} />
                         : null}
                     {isDeleteDeskDialogOpen
                         ? <DeleteDeskDialog
@@ -447,9 +453,11 @@ export default function DesksList(projectId, _setLoading) {
                     justifyContent: 'flex-start',
                 }}>
                     {desks.map((desk) => getDeskElement(desk))}
-                    <ListItem sx={{
-                        alignItems: 'self-start'
-                    }}>
+                    <ListItem
+                        key={-1}
+                        sx={{
+                            alignItems: 'self-start'
+                        }}>
                         <Box sx={{
                             width: '15rem',
                             margin: '.7rem',

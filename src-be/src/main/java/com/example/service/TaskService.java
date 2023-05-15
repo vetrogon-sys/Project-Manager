@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.entity.Desk;
 import com.example.entity.Task;
+import com.example.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,5 +21,9 @@ public interface TaskService {
     Page<Task> getAllFromDesk(Desk desk, Pageable pageable);
 
     Page<Task> getAllFromDeskById(Long deskId, Pageable pageable);
+
+    void assignUserToTaskWithId(Long taskId, User user);
+
+    void unassignUserFromTaskWithId(Long taskId);
 
 }

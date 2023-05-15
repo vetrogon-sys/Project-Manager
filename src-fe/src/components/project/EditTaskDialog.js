@@ -1,10 +1,31 @@
 import React, { useState } from 'react';
-import { Typography, Avatar } from '@mui/material';
-import { Drawer, Box, Button, TextField } from '@mui/material';
+import { Typography, Avatar, List, ListItem, ListItemAvatar, ListItemText, Drawer, Box, Button, TextField, Stack, IconButton } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove.js';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs';
 import TaskController from '../../services/TaskController';
+
+async function assignUserToTask(deskId, taskId, userId) {
+    await TaskController(deskId).assignUserToTask(taskId, userId)
+        .then((response) => {
+            return response.data;
+        })
+        .catch((err) => {
+            return err.response;
+        });
+}
+
+async function unassignUserFromTask(deskId, taskId) {
+    await TaskController(deskId).unassignUserFromTask(taskId)
+        .then((response) => {
+            return response.data;
+        })
+        .catch((err) => {
+            return err.response;
+        });
+}
 
 async function editTaskInDesk(deskId, taskId, taskDto) {
     const data = await TaskController(deskId).editTaskInDesk(taskId, taskDto)
@@ -30,6 +51,9 @@ export default function EditTask(props) {
     const [title, setTitle] = useState(props.editedTask.title);
     const [description, setDescription] = useState(props.editedTask.description);
     const [reqResolutionDate, setReqResolutionDate] = useState(props.editedTask.reqResolutionDate);
+    const [assignedUser, setAssignedUser] = useState(props.assignedUser);
+    const [projectAssignedUsers, setProjectAssignedUsers] = useState(props.projectAssignedUsers);
+    const [searchMail, setSearchMail] = useState(null);
     const [taskErrors, setTaskErrors] = useState({
         titleMessage: null,
         descriptionMessage: null,
@@ -37,6 +61,13 @@ export default function EditTask(props) {
     });
 
     const editTask = async (taskId, taskDto) => {
+        if (props.assignedUser !== assignedUser) {
+            if (assignedUser) {
+                assignUserToTask(props.desk.id, taskId, assignedUser.id);
+            } else {
+                unassignUserFromTask(props.desk.id, taskId);
+            }
+        }
         return await editTaskInDesk(props.desk.id, taskId, taskDto);
     }
 
@@ -67,7 +98,7 @@ export default function EditTask(props) {
         } else {
             taskErrors.reqResolutionDateMessage = null;
         }
-        
+
         if (taskErrors.titleMessage
             || taskErrors.descriptionMessage
             || taskErrors.reqResolutionDateMessage) {
@@ -81,7 +112,8 @@ export default function EditTask(props) {
         const editedTask = props.editedTask;
         return title === editedTask.title
             && description === editedTask.description
-            && reqResolutionDate.isSame(dayjs(editedTask.reqResolutionDate));
+            && dayjs(reqResolutionDate).isSame(dayjs(editedTask.reqResolutionDate))
+            && assignedUser === props.assignedUser;
     }
 
     const acceptChanges = async () => {
@@ -98,7 +130,7 @@ export default function EditTask(props) {
             title: title,
             description: description,
             creationDate: props.editedTask.creationDate,
-            reqResolutionDate: reqResolutionDate ? reqResolutionDate.format('YYYY-MM-DD') : null,
+            reqResolutionDate: reqResolutionDate ? dayjs(reqResolutionDate).format('YYYY-MM-DD') : null
         };
 
         const response = await editTask(id, taskDto);
@@ -115,6 +147,98 @@ export default function EditTask(props) {
 
     const clouseDialog = () => {
         props.clouseDialog();
+    }
+
+    const unassignUser = () => {
+        setAssignedUser(null);
+    }
+
+    const assignUser = (user) => {
+        setAssignedUser(user);
+    }
+
+    const getAvatarForUser = (user) => {
+        return (
+            <Avatar
+                key={user.id}
+                alt={user.firstName + ' ' + user.lastName}
+                src={user.imgUrl}
+                sx={{
+                    width: 40,
+                    height: 40,
+                    fontSize: 12
+                }} >
+                {user.firstName ? (user.firstName.charAt(0) + ' ' + user.lastName.charAt(0)) : ''}
+            </Avatar>
+        );
+    }
+
+    const getAvatarsList = (usersList) => {
+        if (!usersList) {
+            return <div></div>
+        }
+
+        return (<List style={{ maxHeight: '4rem', overflow: 'auto' }}>
+            {usersList
+                .map((user) => (
+                    <ListItem
+                        key={user.id}
+                        secondaryAction={
+                            <IconButton edge="end" aria-label="delete" onClick={() => assignUser(user)}>
+                                <AddIcon />
+                            </IconButton>
+                        }
+                    >
+                        <ListItemAvatar>
+                            {getAvatarForUser(user)}
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary={user.firstName + ' ' + user.lastName}
+                            secondary={user.email}
+                        />
+                    </ListItem>)
+                )}
+        </List>)
+    }
+
+    const getUsersMatchingParameter = () => {
+        if (!searchMail) {
+            return projectAssignedUsers;
+        }
+        return projectAssignedUsers.filter(user => user.email.includes(searchMail));
+    }
+
+    const getAssignedUserAvatar = () => {
+        return (
+            <Stack spacing={2} direction="row" alignItems="center">
+                <Stack>
+                    {getAvatarForUser(assignedUser)}
+                </Stack>
+                <Stack>
+                    <Typography noWrap>{assignedUser.firstName + ' ' + assignedUser.lastName}</Typography>
+                    <Typography noWrap variant='subtitle2'>{assignedUser.email}</Typography>
+                </Stack>
+                <Stack>
+                    <IconButton onClick={unassignUser}>
+                        <RemoveIcon />
+                    </IconButton>
+                </Stack>
+            </Stack>
+        );
+    }
+
+    const getAvaliableToAssignUsersElement = () => {
+
+        return (
+            <Box>
+                <TextField
+                    fullWidth={true}
+                    label={'some.mail@example.com'}
+                    helperText={'Start typing the user\'s email to find'}
+                    variant='standard'
+                    onInput={event => setSearchMail(event.target.value)} />
+                {getAvatarsList(getUsersMatchingParameter())}
+            </Box>)
     }
 
     return (
@@ -173,6 +297,10 @@ export default function EditTask(props) {
                         }}
                     />
                 </LocalizationProvider>
+                <Typography>Assigned user:</Typography>
+                {assignedUser
+                    ? getAssignedUserAvatar()
+                    : getAvaliableToAssignUsersElement()}
                 <Box sx={{
                     marginTop: '1rem'
                 }}>

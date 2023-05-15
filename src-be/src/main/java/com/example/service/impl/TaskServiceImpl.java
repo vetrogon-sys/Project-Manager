@@ -2,6 +2,7 @@ package com.example.service.impl;
 
 import com.example.entity.Desk;
 import com.example.entity.Task;
+import com.example.entity.User;
 import com.example.repository.TaskRepository;
 import com.example.service.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +59,20 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Page<Task> getAllFromDeskById(Long deskId, Pageable pageable) {
         return taskRepository.findAllByDeskIdEquals(deskId, pageable);
+    }
+
+    @Override
+    public void assignUserToTaskWithId(Long taskId, User user) {
+        Task task = getById(taskId);
+        task.setAssignedUser(user);
+        update(task);
+    }
+
+    @Override
+    public void unassignUserFromTaskWithId(Long taskId) {
+        Task task = getById(taskId);
+        task.setAssignedUser(null);
+        update(task);
     }
 
 }

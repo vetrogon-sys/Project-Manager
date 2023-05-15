@@ -57,10 +57,10 @@ async function getUnassignedUsers(alreadyAssignedUsers) {
 
 }
 
-export default function ProjectComponentHeader(projectId) {
+export default function ProjectComponentHeader(props) {
+    const [projectId, setProjectId] = useState(props.projectId);
     const [project, setProject] = useState(null);
-    const [assignedUsers, setAssignedUsers] = useState(null);
-    const [assignedUsersTotalyCount, setAssignedUsersTotalyCount] = useState(0);
+    const [assignedUsers, setAssignedUsers] = useState(props.assignedUsers);
     const [usersToRemove, setUsersToRemove] = useState(new Array())
     const [usersToAssign, setUsersToAssign] = useState(new Array())
     const [unassignedUsers, setUnassignedUsers] = useState(new Array())
@@ -76,7 +76,6 @@ export default function ProjectComponentHeader(projectId) {
             const assignedUsersResponse = await getAssignedUsers(projectId);
 
             setAssignedUsers(assignedUsersResponse.usersPage.content);
-            setAssignedUsersTotalyCount(assignedUsersResponse.usersPage.totalElements)
         };
 
         fetchData();
@@ -181,7 +180,7 @@ export default function ProjectComponentHeader(projectId) {
                             display: 'flex'
                         }}>
                             <AvatarGroup max={5}>
-                                {assignedUsersTotalyCount ? getAssignedUsersAvatars() : <div></div>}
+                                {assignedUsers ? getAssignedUsersAvatars() : <div></div>}
                             </AvatarGroup>
                             <IconButton onClick={openAssignUserDialog} >
                                 <AddIcon />

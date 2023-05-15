@@ -12,6 +12,8 @@ public interface UserService {
 
     User getByEmail(String email);
 
+    User getById(Long id);
+
     List<User> getAllByIds(List<Long> ids);
 
     Page<UserDto> getAllExclusionsIds(UsersIdsList exclusions, Pageable pageable);

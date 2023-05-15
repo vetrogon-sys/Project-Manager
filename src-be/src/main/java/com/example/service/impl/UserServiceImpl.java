@@ -28,6 +28,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getById(Long id) {
+        return userRepository.findById(id)
+              .orElseThrow(() -> new EntityNotFoundException(String.format("Can't find user with id: %d", id)));
+    }
+
+    @Override
     public List<User> getAllByIds(List<Long> ids) {
         return userRepository.findAllById(ids);
     }
