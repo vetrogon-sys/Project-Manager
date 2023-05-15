@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom'
-import { Box, Typography, Card, CardContent, CardActions, Button, Drawer } from '@mui/material';
+import { Box, Typography, Card, CardContent, CardActions, Button, IconButton, Avatar, List, ListItem } from '@mui/material';
 import PlusIcon from '@mui/icons-material/Add';
-import createTaskDialog from './CreateTaskDialog.js';
-import editTaskDialog from './EditTaskDialog.js';
+import AddIcon from '@mui/icons-material/Add.js';
+import MoreIcon from '@mui/icons-material/ReadMore.js';
+import DeleteIcon from '@mui/icons-material/Delete.js';
+import EditTaskDialog from './EditTaskDialog.js';
 import deskController from '../../services/DeskController';
 import taskController from '../../services/TaskController';
+import userController from '../../services/UserController.js';
+import CreateTaskDialog from './CreateTaskDialog.js';
+import CreateDeskDialog from './CreateDeskDialog.js';
+import DeleteDeskDialog from './DeleteDeskDialog.js';
 
 async function getDesks(projectId, setIsLoading) {
-    setIsLoading(true);
+    if (setIsLoading) {
+        setIsLoading(true);
+    }
 
     const data = await deskController(projectId).findAll()
         .then((response) => {
@@ -18,7 +25,9 @@ async function getDesks(projectId, setIsLoading) {
             return err.response;
         });
 
-    setIsLoading(false);
+    if (setIsLoading) {
+        setIsLoading(false);
+    }
 
     return {
         desks: data,
@@ -26,8 +35,38 @@ async function getDesks(projectId, setIsLoading) {
 
 }
 
+async function isAnyUserAssignToTaskWithId(taskId) {
+    const data = await userController().isAssignedToTasktWithIdExist(taskId)
+        .then((response) => {
+            return response.status === 204 ? false : true;
+        })
+        .catch((err) => {
+            return err.response;
+        });
+
+    return {
+        isExist: data,
+    };
+}
+
+async function getUserAssignedToTaskWithId(taskId) {
+    const data = await userController().findAssignedToTasktWithId(taskId)
+        .then((response) => {
+            return response.data;
+        })
+        .catch((err) => {
+            return null;
+        });
+
+    return {
+        user: data,
+    };
+}
+
 async function getTasksForDeskWithId(deskId, setIsLoading) {
-    setIsLoading(true);
+    if (setIsLoading) {
+        setIsLoading(true);
+    }
 
     const data = await taskController(deskId).findAllInDesk()
         .then((response) => {
@@ -37,7 +76,9 @@ async function getTasksForDeskWithId(deskId, setIsLoading) {
             return err.response;
         });
 
-    setIsLoading(false);
+    if (setIsLoading) {
+        setIsLoading(false);
+    }
 
     return {
         tasks: data,
@@ -49,23 +90,33 @@ async function moveTaskToAnotherDesk(taskId, currentDeskId, updatedDeskId) {
     await taskController(currentDeskId).moveTaskToAnotherDesk(taskId, updatedDeskId);
 }
 
-export default function DesksList(projectId, _setLoading) {
+export default function DesksList(projectId, projectAssignedUsers, _setLoading) {
     const [desks, setDesks] = useState();
     const [tasks, setTasks] = useState(new Map());
+    const [assignedUsers, setAssignedUsers] = useState(new Map());
     const [isCreateTaskDialogOpen, setIsCreateTaskDialogOpen] = useState(false);
     const [isEditTaskDialogOpen, setIsEditTaskDialogOpen] = useState(false);
-    const [taskErrors, setTaskErrors] = useState(null);
+    const [isCreateDeskMode, setIsCreateDeskMode] = useState(false);
+    const [isDeleteDeskDialogOpen, setIsDeleteDeskDialogOpen] = useState(false);
     const [editedTask, setEditedTask] = useState(null);
     const [deskToChange, setDeskToChange] = useState(null);
 
     useEffect(() => {
-        const fetchData = async () => {
-            let response = await getDesks(projectId, _setLoading);
+        const fetchData = async (isLoading) => {
+            let response = await getDesks(projectId, isLoading ? _setLoading : null);
 
             if (response.desks) {
-                response.desks.forEach(async (desk) => {
-                    let responseTasks = (await getTasksForDeskWithId(desk.id, _setLoading)).tasks;
 
+                response.desks.forEach(async (desk) => {
+                    let responseTasks = (await getTasksForDeskWithId(desk.id, isLoading ? _setLoading : null)).tasks;
+
+                    responseTasks.forEach(async (task) => {
+                        const isAssignUserExist = (await isAnyUserAssignToTaskWithId(task.id)).isExist;
+                        if (isAssignUserExist) {
+                            const user = (await getUserAssignedToTaskWithId(task.id)).user;
+                            setAssignedUsers(new Map(assignedUsers.set(task.id, user)))
+                        }
+                    })
                     setTasks(new Map(tasks.set(desk.name, responseTasks)));
                 })
 
@@ -73,8 +124,13 @@ export default function DesksList(projectId, _setLoading) {
             }
         };
 
-        if (!desks) {
-            fetchData();
+        fetchData(true);
+
+        const interval = setInterval(() => {
+            fetchData(false);
+        }, 100000000)
+        return () => {
+            clearInterval(interval);
         }
 
     }, [])
@@ -82,7 +138,14 @@ export default function DesksList(projectId, _setLoading) {
     useEffect(() => {
         const fetchData = async () => {
             desks.forEach(async (desk) => {
-                let responseTasks = (await getTasksForDeskWithId(desk.id, _setLoading)).tasks;
+                let responseTasks = (await getTasksForDeskWithId(desk.id, null)).tasks;
+                responseTasks.forEach(async (task) => {
+                    const isAssignUserExist = (await isAnyUserAssignToTaskWithId(task.id)).isExist;
+                    if (isAssignUserExist) {
+                        const user = (await getUserAssignedToTaskWithId(task.id)).user;
+                        setAssignedUsers(new Map(assignedUsers.set(task.id, user)))
+                    }
+                })
                 setTasks(new Map(tasks.set(desk.name, responseTasks)));
             });
         };
@@ -90,25 +153,46 @@ export default function DesksList(projectId, _setLoading) {
         if (desks) {
             fetchData();
         }
-    }, [isCreateTaskDialogOpen])
+    }, [isCreateTaskDialogOpen, isEditTaskDialogOpen, isCreateDeskMode, isDeleteDeskDialogOpen])
+
+    const getDeskByName = (name) => {
+        return desks.find(desk => desk.name === name);
+    }
 
     const openCreateTaskDialog = (desk) => {
         setDeskToChange(desk);
         setIsCreateTaskDialogOpen(true);
     }
 
-    const clouseCreateTaskDialog = () => {
-        setTaskErrors(null);
+    const closeCreateTaskDialog = () => {
         setIsCreateTaskDialogOpen(false);
     }
 
-    const onepnEditTaskDialogForTask = (task) => {
+    const openDeleteDeskDialog = (desk) => {
+        setDeskToChange(desk);
+        setIsDeleteDeskDialogOpen(true);
+    }
+
+    const closeDeleteDeskDialog = () => {
+        setIsDeleteDeskDialogOpen(false);
+    }
+
+    const onepnEditTaskDialogForTask = (event, task) => {
+        setDeskToChange(getDeskByName(event.currentTarget.parentElement.parentElement.parentElement.parentElement.id));
         setEditedTask(task);
         setIsEditTaskDialogOpen(true);
     }
 
-    const clouseEditTaskDialog = () => {
+    const closeEditTaskDialog = () => {
         setIsEditTaskDialogOpen(false);
+    }
+
+    const openCreateDeskDialog = () => {
+        setIsCreateDeskMode(true);
+    }
+
+    const closeCreateDeskDialog = () => {
+        setIsCreateDeskMode(false);
     }
 
     const onDragStart = (evt) => {
@@ -159,11 +243,27 @@ export default function DesksList(projectId, _setLoading) {
         let updatedDeskTasks = tasks.get(deskName);
         updatedDeskTasks.push(taskToMove);
 
-        const currentDeskId = desks.find(desk => desk.name === currentDeskName).id;
-        const updatedDeskId = desks.find(desk => desk.name === deskName).id;
+        const currentDeskId = getDeskByName(currentDeskName).id;
+        const updatedDeskId = getDeskByName(deskName).id;
         moveTaskToAnotherDesk(taskId, currentDeskId, updatedDeskId);
         setTasks(new Map(updatedTasks.set(deskName, updatedDeskTasks)));
     };
+
+    const getAvatarForUser = (user) => {
+        return (
+            <Avatar
+                key={user.id}
+                alt={user.firstName + ' ' + user.lastName}
+                src={user.imgUrl}
+                sx={{
+                    width: 30,
+                    height: 30,
+                    fontSize: 12
+                }} >
+                {user.firstName ? (user.firstName.charAt(0) + ' ' + user.lastName.charAt(0)) : ''}
+            </Avatar>
+        )
+    }
 
     const getTaskElement = (task) => {
         return (
@@ -180,23 +280,29 @@ export default function DesksList(projectId, _setLoading) {
                 <CardContent sx={{
                     padding: '.5rem .5rem 0 .5rem'
                 }}>
-                    <Typography sx={{ fontSize: 12 }} color="text.secondary" gutterBottom>
-                        Task
-                    </Typography>
                     <Typography sx={{ fontSize: 16 }} component="div" >
                         {task.title}
                     </Typography>
-                    <Typography sx={{ fontSize: 12 }} color="text.secondary">
-                        adjective
-                    </Typography>
-                    <Typography sx={{ fontSize: 14 }}>
-                        {task.description ? task.description.substring(0, 32) + '...' : 'There isn\'t descritpion here...'}
+                    <Typography sx={{ fontSize: 14 }} color="text.secondary">
+                        {task.description
+                            ? (task.description.substring(0, 32) + (task.description.length > 32 ? '...' : ''))
+                            : 'There isn\'t descritpion here...'}
                     </Typography>
                 </CardContent>
                 <CardActions sx={{
-                    padding: '.1rem .5rem'
+                    padding: '.1rem .5rem',
+                    display: 'flex',
+                    justifyContent: 'space-between'
                 }}>
-                    <Button onClick={e => onepnEditTaskDialogForTask(task)} size="small">Learn More</Button>
+                    <IconButton
+                        className='lorn-more-ico-button'
+                        onClick={e => onepnEditTaskDialogForTask(e, task)}
+                        size='small'>
+                        <MoreIcon />
+                    </IconButton>
+                    {assignedUsers.get(task.id)
+                        ? getAvatarForUser(assignedUsers.get(task.id))
+                        : <div></div>}
                 </CardActions>
             </Card>
         )
@@ -216,67 +322,114 @@ export default function DesksList(projectId, _setLoading) {
             .map(task => getTaskElement(task));
     }
 
-    const getDeskContainer = (desk) => {
+    const getDeskElement = (desk) => {
 
         return (
-            <Box
+            <ListItem
                 key={desk.id}
-                id={desk.name}
                 sx={{
-                    width: '100%',
-                    minWidth: '250',
-                    maxWidth: '500',
-                    margin: '.7rem',
-                    backgroundColor: 'rgb(245, 247, 252)',
-                    height: 'fit-content',
-                    maxHeight: '100%',
-                    borderRadius: '.3rem',
-                    display: 'flex',
-                    flexDirection: 'column'
-                }
-                }
-                onDragLeave={(e) => onDragLeave(e)}
-                onDragEnter={(e) => onDragEnter(e)}
-                onDragEnd={(e) => onDragEnd(e)}
-                onDragOver={(e) => onDragOver(e)}
-                onDrop={(e) => onDrop(e, desk.name)}
-            >
+                    alignItems: 'self-start',
+                    paddingLeft: 0,
+                    paddingRight: 0
+                }}>
                 <Box
+                    key={desk.id}
+                    id={desk.name}
                     sx={{
+                        width: '16rem',
+                        margin: '.7rem',
+                        backgroundColor: 'rgb(245, 247, 252)',
+                        height: 'fit-content',
+                        maxHeight: '100%',
+                        borderRadius: '.3rem',
                         display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        width: '100%',
-                        backgroundColor: 'rgb(199, 208, 235)',
-                        minHeight: '3rem',
-                        fontWeight: 400
-                    }}
+                        flexDirection: 'column'
+                    }
+                    }
+                    onDragLeave={(e) => onDragLeave(e)}
+                    onDragEnter={(e) => onDragEnter(e)}
+                    onDragEnd={(e) => onDragEnd(e)}
+                    onDragOver={(e) => onDragOver(e)}
+                    onDrop={(e) => onDrop(e, desk.name)}
                 >
-                    {desk.name}
-                </Box>
-                <Box sx={{
-                    margin: '.5rem',
-                    overflow: "auto",
-                    height: '100%'
-                }}>
-                    {getDeskTasks(desk)}
-                </Box>
-                <Box sx={{
-                    alignSelf: 'flex-end',
-                }}>
-                    <Button
-                        onClick={e => openCreateTaskDialog(desk)}
+                    <Box
                         sx={{
-                            margin: '.5rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            width: '100%',
+                            backgroundColor: 'rgb(199, 208, 235)',
+                            minHeight: '3rem',
+                            fontWeight: 400
+                        }}
+                    >
+                        <div style={{
+                            marginLeft: '1rem'
                         }}>
-                        <PlusIcon />
-                        Create task
-                    </Button>
-                </Box>
+                            {desk.name}
+                        </div>
+                        <IconButton
+                            onClick={e => openDeleteDeskDialog(desk)}
+                            sx={{
+                                marginLeft: 'auto',
+                            }}>
+                            <DeleteIcon />
+                        </IconButton>
+                    </Box>
+                    <Box sx={{
+                        margin: '.5rem',
+                        overflow: "auto",
+                        height: '100%'
+                    }}>
+                        {getDeskTasks(desk)}
+                    </Box>
+                    <Box sx={{
+                        alignSelf: 'flex-end',
+                    }}>
+                        <Button
+                            onClick={e => openCreateTaskDialog(desk)}
+                            sx={{
+                                margin: '.5rem',
+                            }}>
+                            <PlusIcon />
+                            Create task
+                        </Button>
+                    </Box>
 
-                {isCreateTaskDialogOpen ? createTaskDialog(deskToChange, taskErrors, clouseCreateTaskDialog, setTaskErrors) : <div></div>}
-                {isEditTaskDialogOpen ? editTaskDialog(deskToChange, editedTask, taskErrors, clouseEditTaskDialog, setTaskErrors) : <div></div>}
-            </Box >
+                    {isCreateTaskDialogOpen
+                        ? <CreateTaskDialog
+                            desk={deskToChange}
+                            clouseDialog={closeCreateTaskDialog} />
+                        : null}
+                    {isEditTaskDialogOpen
+                        ? <EditTaskDialog
+                            desk={deskToChange}
+                            editedTask={editedTask}
+                            clouseDialog={closeEditTaskDialog}
+                            assignedUser={assignedUsers.get(editedTask.id)}
+                            projectAssignedUsers={projectAssignedUsers} />
+                        : null}
+                    {isDeleteDeskDialogOpen
+                        ? <DeleteDeskDialog
+                            projectId={projectId}
+                            desk={deskToChange}
+                            closeDialog={closeDeleteDeskDialog} />
+                        : null}
+                </Box >
+            </ListItem>
+        )
+    }
+
+    const getCreateDeskButton = () => {
+        if (isCreateDeskMode) {
+            return <CreateDeskDialog
+                projectId={projectId}
+                closeCreateMenu={closeCreateDeskDialog} />
+        }
+        return (
+            <Button onClick={openCreateDeskDialog}>
+                <AddIcon />
+                Create desk
+            </Button>
         )
     }
 
@@ -285,19 +438,50 @@ export default function DesksList(projectId, _setLoading) {
             return <div></div>;
         }
 
-        return desks.map(
-            (desk) => getDeskContainer(desk)
-        );
+        return (
+            <Box sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                width: '95%',
+                marginLeft: 0,
+                position: 'relative'
+            }}>
+                <List sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignContent: 'flex-start',
+                    justifyContent: 'flex-start',
+                }}>
+                    {desks.map((desk) => getDeskElement(desk))}
+                    <ListItem
+                        key={-1}
+                        sx={{
+                            alignItems: 'self-start'
+                        }}>
+                        <Box sx={{
+                            width: '15rem',
+                            margin: '.7rem',
+                            backgroundColor: 'rgb(245, 247, 252)',
+                            height: 'fit-content',
+                            maxHeight: '100%',
+                            borderRadius: '.3rem',
+                            display: 'flex',
+                            flexDirection: 'column'
+                        }}>
+                            {getCreateDeskButton()}
+                        </Box>
+                    </ListItem>
+                </List>
+            </Box >
+        )
     }
 
     return (
         <div style={{
             marginTop: '1rem',
+            width: '100%',
             display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            width: '95%',
-            height: '90%'
+            justifyContent: 'flex-start',
         }}>
             {getDesksContainers()}
         </div>

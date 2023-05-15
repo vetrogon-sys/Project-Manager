@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, AppBar, Toolbar, Typography, AvatarGroup, Avatar } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
+import BackIcon from '@mui/icons-material/ArrowBack';
 import projectEditDialog from './ProjectEditDialog';
 import assignUserDialog from './AssignUsersToProjectDialog';
 import projectController from '../../services/ProjectController';
@@ -56,10 +57,10 @@ async function getUnassignedUsers(alreadyAssignedUsers) {
 
 }
 
-export default function ProjectComponentHeader(projectId) {
+export default function ProjectComponentHeader(props) {
+    const [projectId, setProjectId] = useState(props.projectId);
     const [project, setProject] = useState(null);
-    const [assignedUsers, setAssignedUsers] = useState(null);
-    const [assignedUsersTotalyCount, setAssignedUsersTotalyCount] = useState(0);
+    const [assignedUsers, setAssignedUsers] = useState(props.assignedUsers);
     const [usersToRemove, setUsersToRemove] = useState(new Array())
     const [usersToAssign, setUsersToAssign] = useState(new Array())
     const [unassignedUsers, setUnassignedUsers] = useState(new Array())
@@ -75,7 +76,6 @@ export default function ProjectComponentHeader(projectId) {
             const assignedUsersResponse = await getAssignedUsers(projectId);
 
             setAssignedUsers(assignedUsersResponse.usersPage.content);
-            setAssignedUsersTotalyCount(assignedUsersResponse.usersPage.totalElements)
         };
 
         fetchData();
@@ -93,6 +93,10 @@ export default function ProjectComponentHeader(projectId) {
 
     }, [isOpenAssignUserDialog])
 
+    const goToAllProjects = () => {
+        window.location.href = '/';
+    }
+
     const getAvatarForUser = (user) => {
         return (
             <Avatar key={user.id} alt={user.firstName + ' ' + user.lastName} src={user.imgUrl} >
@@ -107,7 +111,7 @@ export default function ProjectComponentHeader(projectId) {
     }
 
     const updateProjectDescription = (updDescrtiption) => {
-        setProject({...project, description: updDescrtiption})
+        setProject({ ...project, description: updDescrtiption })
     }
 
     const getAssignedUsersAvatars = () => {
@@ -144,19 +148,44 @@ export default function ProjectComponentHeader(projectId) {
         }}>
             <Box sx={{ flexGrow: 1, textAlign: 'left' }}>
                 <AppBar position="static">
-                    <Toolbar variant="dense">
-                        <IconButton onClick={openEditProjectDialog} color='default'>
-                            <AddIcon />
-                        </IconButton>
-                        <Typography variant="h6" color="inherit" component="div" sx={{ flexGrow: 1 }}>
-                            {project ? project.name : ''}
-                        </Typography>
-                        <AvatarGroup max={5}>
-                            {assignedUsersTotalyCount ? getAssignedUsersAvatars() : <div></div>}
-                        </AvatarGroup>
-                        <IconButton onClick={openAssignUserDialog} >
-                            <AddIcon />
-                        </IconButton>
+                    <Toolbar
+                        variant="dense"
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between'
+                        }}>
+                        <Box sx={{
+                            width: 'fit-content',
+                            display: 'flex'
+                        }}>
+                            <IconButton onClick={goToAllProjects} color='default'>
+                                <BackIcon />
+                            </IconButton>
+                            <Typography
+                                variant="h5"
+                                color="inherit"
+                                component="div"
+                                sx={{ 
+                                    paddingTop: '.2rem' ,
+                                    paddingLeft: '1rem'
+                                    }} >
+                                {project ? project.name : ''}
+                            </Typography>
+                            <IconButton onClick={openEditProjectDialog} color='default'>
+                                <AddIcon />
+                            </IconButton>
+                        </Box>
+                        <Box sx={{
+                            width: 'fit-content',
+                            display: 'flex'
+                        }}>
+                            <AvatarGroup max={5}>
+                                {assignedUsers ? getAssignedUsersAvatars() : <div></div>}
+                            </AvatarGroup>
+                            <IconButton onClick={openAssignUserDialog} >
+                                <AddIcon />
+                            </IconButton>
+                        </Box>
                     </Toolbar>
                 </AppBar>
             </Box>

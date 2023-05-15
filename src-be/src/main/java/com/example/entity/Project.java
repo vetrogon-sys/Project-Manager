@@ -83,7 +83,6 @@ public class Project {
     }
 
     public void removeAssignedUsersWithIds(List<Long> userIds) {
-        userIds.removeIf(userId -> creator.getId().equals(userId));
         assignedUsers.removeIf(user -> userIds.contains(user.getId()));
     }
 

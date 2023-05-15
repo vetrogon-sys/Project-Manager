@@ -27,6 +27,30 @@ export default function TaskController(deskId) {
                 }).catch(err => {
                     throw err;
                 });
-        }
+        },
+        editTaskInDesk: function (taskId, taskDto) {
+            return http().PATCH(`${baseUri}/${taskId}`, taskDto)
+                .then(response => {
+                    return response;
+                }).catch(err => {
+                    throw err;
+                });
+        },
+        assignUserToTask: function (taskId, userId) {
+            return http().PATCH(`${baseUri}/${taskId}/users/${userId}`, null)
+                .then(response => {
+                    return response;
+                }).catch(err => {
+                    throw err;
+                });
+        },
+        unassignUserFromTask: function (taskId) {
+            return http().DELETE(`${baseUri}/${taskId}/users`, null)
+                .then(response => {
+                    return response;
+                }).catch(err => {
+                    throw err;
+                });
+        },
     }
 }

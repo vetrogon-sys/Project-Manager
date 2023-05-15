@@ -45,6 +45,9 @@ public class User {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "assignedUsers")
     private Set<Project> assignedProjects;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "assignedUser")
+    private Set<Task> assignedTasks;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

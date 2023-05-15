@@ -20,7 +20,7 @@ public class TaskDto {
     private Long id;
 
     @NotBlank(message = "Task title can't be blank")
-    @Size(min = 15, max = 125, message = "Task title must be between 15 and 125 symbols")
+    @Size(min = 5, max = 125, message = "Task title must be between 5 and 125 symbols")
     private String title;
     @Size(max = 512, message = "Task description must be less than 512 symbols")
     private String description;

@@ -28,6 +28,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getById(Long id) {
+        return userRepository.findById(id)
+              .orElseThrow(() -> new EntityNotFoundException(String.format("Can't find user with id: %d", id)));
+    }
+
+    @Override
     public List<User> getAllByIds(List<Long> ids) {
         return userRepository.findAllById(ids);
     }
@@ -57,6 +63,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isUserWithEmailExist(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public UserDto getAssignedToTaskWithId(Long taskId) {
+        User user = userRepository.findByAssignedTasksIdEquals(taskId)
+              .orElseThrow(() -> new EntityNotFoundException(String.format("There isn't Users assign to task with id: %d", taskId)));
+        return userMapper.userToUserDto(user);
+    }
+
+    @Override
+    public boolean isAssignedToTaskWithIdExist(Long taskId) {
+        return userRepository.existsByAssignedTasksId(taskId);
     }
 
 }

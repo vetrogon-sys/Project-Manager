@@ -1,7 +1,9 @@
 package com.example.controller;
 
 import com.example.dto.TaskDto;
+import com.example.service.TaskService;
 import com.example.service.TasksInDeskService;
+import com.example.service.UsersTasksService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,10 @@ import java.util.List;
 public class TaskController {
 
     private final TasksInDeskService tasksInDeskService;
+
+    private final TaskService taskService;
+
+    private final UsersTasksService usersTasksService;
 
     @PostMapping
     public ResponseEntity<Void> createTask(@PathVariable Long deskId, @Valid @RequestBody TaskDto taskDto,
@@ -70,6 +76,21 @@ public class TaskController {
 
         return ResponseEntity
                 .ok().build();
+    }
+
+    @PatchMapping("/{taskId}/users/{userId}")
+    public ResponseEntity<Void> assignUserByIdToTaskById(@PathVariable Long taskId,
+                                                         @PathVariable Long userId) {
+        usersTasksService.assignUserWithIdToTaskWithId(userId, taskId);
+        return ResponseEntity
+              .ok().build();
+    }
+
+    @DeleteMapping("/{taskId}/users")
+    public ResponseEntity<Void> unassignUserFromTaskById(@PathVariable Long taskId) {
+        taskService.unassignUserFromTaskWithId(taskId);
+        return ResponseEntity
+              .ok().build();
     }
 
 }

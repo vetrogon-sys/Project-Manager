@@ -1,16 +1,16 @@
 package com.example.controller;
 
 import com.example.dto.ProjectDto;
-import com.example.dto.UsersIdsList;
 import com.example.service.ProjectService;
 import com.example.service.UsersInProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +31,7 @@ public class ProjectController {
               .ok(projectService.getByIdAsDto(projectId));
     }
 
-    @PutMapping("/{projectId}")
+    @PatchMapping("/{projectId}")
     public ResponseEntity<ProjectDto> update(@PathVariable Long projectId,
                                              @RequestBody ProjectDto projectDto) {
         return ResponseEntity
@@ -52,7 +52,7 @@ public class ProjectController {
               .ok(projectService.getAllWhereUserWithEmailIsAssigned(principal.getName(), pageable));
     }
 
-    @PutMapping("/{projectId}/assign/users/{usersIds}")
+    @PatchMapping("/{projectId}/users/{usersIds}")
     public ResponseEntity<Void> assignUsersToProjects(@PathVariable Long projectId,
                                                       @PathVariable Long[] usersIds) {
         usersInProjectService.assignUsersByIdsToProjectById(projectId, List.of(usersIds));
@@ -61,11 +61,11 @@ public class ProjectController {
               .build();
     }
 
-    @PutMapping("/{projectId}/unassign/users")
+    @DeleteMapping("/{projectId}/users/{usersIds}")
     public ResponseEntity<Void> unasignUsersWithIdsFromProjectWithId(@PathVariable Long projectId,
-                                                                     @RequestBody UsersIdsList idsList) {
+                                                                     @PathVariable Long[] usersIds) {
 
-        projectService.removeAssignedUsersWithIdsFromProjectWithId(idsList, projectId);
+        projectService.removeAssignedUsersWithIdsFromProjectWithId(List.of(usersIds), projectId);
         return ResponseEntity
               .ok()
               .build();

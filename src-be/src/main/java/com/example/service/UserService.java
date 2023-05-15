@@ -12,6 +12,8 @@ public interface UserService {
 
     User getByEmail(String email);
 
+    User getById(Long id);
+
     List<User> getAllByIds(List<Long> ids);
 
     Page<UserDto> getAllExclusionsIds(UsersIdsList exclusions, Pageable pageable);
@@ -24,4 +26,7 @@ public interface UserService {
 
     boolean isUserWithEmailExist(String email);
 
+    UserDto getAssignedToTaskWithId(Long taskId);
+
+    boolean isAssignedToTaskWithIdExist(Long taskId);
 }
