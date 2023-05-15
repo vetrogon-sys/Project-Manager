@@ -41,7 +41,11 @@ async function getUnassignedUsers(alreadyAssignedUsers) {
     if (!alreadyAssignedUsers) {
         return;
     }
-    const data = await userController().findAllExclusions(alreadyAssignedUsers.map(user => user.id))
+    let userIds = alreadyAssignedUsers.map(user => user.id);
+    if (userIds.length === 0) {
+        userIds.push(0)
+    }
+    const data = await userController().findAllExclusions(userIds)
         .then((response) => {
             return response.data;
         })

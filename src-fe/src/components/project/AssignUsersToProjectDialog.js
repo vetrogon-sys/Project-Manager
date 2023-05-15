@@ -45,7 +45,7 @@ export default function AssignUsersToProjectDialog(project, usersToAssign, unass
     }
 
     const getUnassignedUsersListElements = () => {
-        if (unassignedUsers.users.length === 0) {
+        if (!unassignedUsers.users || (unassignedUsers.users && unassignedUsers.users.length === 0)) {
             return <div></div>
         }
 
