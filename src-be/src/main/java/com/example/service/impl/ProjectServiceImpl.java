@@ -33,8 +33,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectDto create(Project project) {
-        return projectMapper.projectToProjectDto(projectRepository.save(project));
+    public Project create(Project project) {
+        return projectRepository.save(project);
     }
 
     @Override
