@@ -36,5 +36,13 @@ export default function UeskController() {
                     throw err;
                 });
         },
+        aboutMe: function() {
+            return http().GET(`${baseUri}/aboutme`)
+                .then(response => {
+                    return response;
+                }).catch(err => {
+                    throw err;
+                });
+        }
     }
 }
