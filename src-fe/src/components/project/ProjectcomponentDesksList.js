@@ -140,6 +140,33 @@ export default function DesksList(projectId, projectAssignedUsers, _setLoading) 
     }, [])
 
     useEffect(() => {
+        const fetchData = async (isLoading) => {
+            let response = await getDesks(projectId, isLoading ? _setLoading : null);
+
+            if (response.desks) {
+
+                response.desks.forEach(async (desk) => {
+                    let responseTasks = (await getTasksForDeskWithId(desk.id, isLoading ? _setLoading : null)).tasks;
+
+                    responseTasks.forEach(async (task) => {
+                        const isAssignUserExist = (await isAnyUserAssignToTaskWithId(task.id)).isExist;
+                        if (isAssignUserExist) {
+                            const user = (await getUserAssignedToTaskWithId(task.id)).user;
+                            setAssignedUsers(new Map(assignedUsers.set(task.id, user)))
+                        }
+                    })
+                    setTasks(new Map(tasks.set(desk.name, responseTasks)));
+                })
+
+                setDesks(response.desks);
+            }
+        };
+
+        fetchData(false);
+
+    }, [isCreateDeskMode, isDeleteDeskDialogOpen])
+
+    useEffect(() => {
         const fetchData = async () => {
             desks.forEach(async (desk) => {
                 let responseTasks = (await getTasksForDeskWithId(desk.id, null)).tasks;
@@ -157,7 +184,7 @@ export default function DesksList(projectId, projectAssignedUsers, _setLoading) 
         if (desks) {
             fetchData();
         }
-    }, [isCreateTaskDialogOpen, isEditTaskDialogOpen, isCreateDeskMode, isDeleteDeskDialogOpen])
+    }, [isCreateTaskDialogOpen, isEditTaskDialogOpen])
 
     const getDeskByName = (name) => {
         return desks.find(desk => desk.name === name);

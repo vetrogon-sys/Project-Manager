@@ -14,7 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
-import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -28,12 +27,10 @@ import java.util.Objects;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@NamedEntityGraphs({
-        @NamedEntityGraph(
-                name = "desk-with-tasks",
-                attributeNodes = {@NamedAttributeNode("tasks")}
-        )
-})
+@NamedEntityGraph(
+      name = "desk-with-tasks",
+      attributeNodes = {@NamedAttributeNode("tasks")}
+)
 public class Desk {
 
     @Id
@@ -66,16 +63,29 @@ public class Desk {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Desk desk = (Desk) o;
         return Objects.equals(id, desk.id) &&
-                Objects.equals(name, desk.name) &&
-                Objects.equals(project, desk.project);
+              Objects.equals(name, desk.name) &&
+              Objects.equals(project, desk.project);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, name, project);
+    }
+
+    public Boolean removeAllTasks() {
+        if (Objects.isNull(tasks)) {
+            return Boolean.FALSE;
+        }
+        tasks.forEach(task -> task.setDesk(null));
+        tasks = null;
+        return Boolean.TRUE;
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -73,6 +74,11 @@ public class TaskServiceImpl implements TaskService {
         Task task = getById(taskId);
         task.setAssignedUser(null);
         update(task);
+    }
+
+    @Override
+    public void deleteAllIn(List<Task> tasks) {
+        taskRepository.deleteAll(tasks);
     }
 
 }

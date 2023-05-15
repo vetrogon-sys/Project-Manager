@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.dto.DeskDto;
 import com.example.service.DesksInProjectService;
+import com.example.service.TasksInDeskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,6 +23,7 @@ import java.util.List;
 public class DeskController {
 
     private final DesksInProjectService desksInProjectService;
+    private final TasksInDeskService tasksInDeskService;
 
     @GetMapping
     public ResponseEntity<List<DeskDto>> getAllDesksFromProject(@PathVariable Long projectId) {
@@ -46,6 +48,7 @@ public class DeskController {
 
     @DeleteMapping("/{deskId}")
     public ResponseEntity<Void> deleteDesksInProject(@PathVariable Long deskId) {
+        tasksInDeskService.deleteAllTasksFromDesk(deskId);
         desksInProjectService.deleteDeskById(deskId);
 
         return ResponseEntity

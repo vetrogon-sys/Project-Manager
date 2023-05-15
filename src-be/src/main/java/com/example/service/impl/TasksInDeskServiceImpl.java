@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class TasksInDeskServiceImpl implements TasksInDeskService {
@@ -47,6 +49,14 @@ public class TasksInDeskServiceImpl implements TasksInDeskService {
         Task task = taskService.getById(taskId);
         deskService.removeTaskFromDeskById(deskId, task);
         taskService.deleteById(taskId);
+    }
+
+    @Override
+    public void deleteAllTasksFromDesk(Long deskId) {
+        Desk desk = deskService.getByIdWithTasks(deskId);
+        List<Task> tasks = desk.getTasks();
+        desk.removeAllTasks();
+        taskService.deleteAllIn(tasks);
     }
 
     @Override
