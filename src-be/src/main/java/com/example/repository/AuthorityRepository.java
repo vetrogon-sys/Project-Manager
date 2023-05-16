@@ -14,4 +14,10 @@ public interface AuthorityRepository extends JpaRepository<Authority, Long> {
 
     Optional<Authority> findBySignature(String signature);
 
+    boolean existsByRelatedProjectIdEqualsAndAssignedEmailEquals(Long projectId, String assignedEmail);
+
+    boolean existsByRelatedProjectDesksIdEqualsAndAssignedEmailEquals(Long deskId, String assignedEmail);
+
+    boolean existsByRelatedProjectDesksTasksIdEqualsAndAssignedEmailEquals(Long taskId, String assignedEmail);
+
 }

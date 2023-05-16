@@ -18,4 +18,10 @@ public interface AuthorityService {
 
     List<GrantedAuthority> getAllByUserEmailAsGrantedAuthorities(String email);
 
+    boolean existsByProjectIdAndAssignedEmailEquals(Long projectId, String assignedEmail);
+
+    boolean existByDeskInProjectIdAndAssignedUserEmail(Long deskId, String assignedEmail);
+
+    boolean existsByTaskInProjectIdAndAssignedUserEmail(Long taskId, String assignedEmail);
+
 }

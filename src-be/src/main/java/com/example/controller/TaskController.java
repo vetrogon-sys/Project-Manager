@@ -7,6 +7,7 @@ import com.example.service.UsersTasksService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -32,6 +33,7 @@ public class TaskController {
 
     private final UsersTasksService usersTasksService;
 
+    @PreAuthorize("hasPermission(#deskId, 'Desk', 'edit')")
     @PostMapping
     public ResponseEntity<Void> createTask(@PathVariable Long deskId, @Valid @RequestBody TaskDto taskDto,
                                            HttpServletRequest request) {
@@ -47,6 +49,7 @@ public class TaskController {
                 .build();
     }
 
+    @PreAuthorize("hasPermission(#deskId, 'Desk', 'edit')")
     @PatchMapping("/{taskId}/moveTo/desks/{anotherDeskId}")
     public ResponseEntity<Void> moveTaskToAnotherDesk(@PathVariable Long deskId, @PathVariable Long taskId,
                                                       @PathVariable Long anotherDeskId) {
@@ -56,6 +59,7 @@ public class TaskController {
                 .ok().build();
     }
 
+    @PreAuthorize("hasPermission(#deskId, 'Desk', 'edit')")
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> deleteTaskFromDesk(@PathVariable Long deskId, @PathVariable Long taskId) {
         tasksInDeskService.deleteTaskInDesk(deskId, taskId);
@@ -64,12 +68,14 @@ public class TaskController {
                 .ok().build();
     }
 
+    @PreAuthorize("hasPermission(#deskId, 'Desk', 'edit')")
     @GetMapping
     public ResponseEntity<List<TaskDto>> getAllTasksFromDesk(@PathVariable Long deskId, Pageable pageable) {
         return ResponseEntity
                 .ok(tasksInDeskService.getTasksFromDesk(deskId, pageable).getContent());
     }
 
+    @PreAuthorize("hasPermission(#taskId, 'Task', 'edit')")
     @PatchMapping("/{taskId}")
     public ResponseEntity<Void> updateTask(@PathVariable Long taskId, @RequestBody TaskDto taskDto) {
         tasksInDeskService.updateTask(taskId, taskDto);
@@ -78,6 +84,7 @@ public class TaskController {
                 .ok().build();
     }
 
+    @PreAuthorize("hasPermission(#taskId, 'Task', 'edit')")
     @PatchMapping("/{taskId}/users/{userId}")
     public ResponseEntity<Void> assignUserByIdToTaskById(@PathVariable Long taskId,
                                                          @PathVariable Long userId) {
@@ -86,6 +93,7 @@ public class TaskController {
               .ok().build();
     }
 
+    @PreAuthorize("hasPermission(#taskId, 'Task', 'edit')")
     @DeleteMapping("/{taskId}/users")
     public ResponseEntity<Void> unassignUserFromTaskById(@PathVariable Long taskId) {
         taskService.unassignUserFromTaskWithId(taskId);
