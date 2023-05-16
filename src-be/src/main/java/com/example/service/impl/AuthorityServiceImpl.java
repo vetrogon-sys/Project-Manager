@@ -52,6 +52,21 @@ public class AuthorityServiceImpl implements AuthorityService {
               .collect(Collectors.toList());
     }
 
+    @Override
+    public boolean existsByProjectIdAndPermissionAndAssignedEmailEquals(Long projectId, String assignedEmail, String permission) {
+        return authorityRepository.existsByRelatedProjectIdEqualsAndAssignedEmailEqualsAndOpportunitiesOpportunityEquals(projectId, assignedEmail, permission);
+    }
+
+    @Override
+    public boolean existByDeskInProjectIdAndPermissionAndAssignedUserEmail(Long deskId, String assignedEmail, String permission) {
+        return authorityRepository.existsByRelatedProjectDesksIdEqualsAndAssignedEmailEqualsAndOpportunitiesOpportunityEquals(deskId, assignedEmail, permission);
+    }
+
+    @Override
+    public boolean existsByTaskInProjectIdAndPermissionAndAssignedUserEmail(Long taskId, String assignedEmail, String permission) {
+        return authorityRepository.existsByRelatedProjectDesksTasksIdEqualsAndAssignedEmailEqualsAndOpportunitiesOpportunityEquals(taskId, assignedEmail, permission);
+    }
+
     private String buildAuthoritySignature(Long userId, Long projectId, List<SecurityOpportunity> opportunities) {
         return USER_VALUE
               + UNDERSCORE

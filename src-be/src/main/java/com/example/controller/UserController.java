@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +32,7 @@ public class UserController {
               .ok(userService.getAllExclusionsIds(new UsersIdsList(List.of(exclusionsIds)), pageable));
     }
 
+    @PreAuthorize("hasPermission(#projectId, 'Project', 'get')")
     @GetMapping("/assignTo/projects/{projectId}")
     public ResponseEntity<Page<UserDto>> getAssignedToProjectById(@PathVariable Long projectId,
                                                                   Pageable pageable) {
@@ -38,12 +40,14 @@ public class UserController {
               .ok(userService.getAllAssignedToProjectWithId(projectId, pageable));
     }
 
+    @PreAuthorize("hasPermission(#taskId, 'Task', 'get')")
     @GetMapping("/assignTo/tasks/{taskId}")
     public ResponseEntity<UserDto> getAssignedToTaskById(@PathVariable Long taskId) {
         return ResponseEntity
               .ok(userService.getAssignedToTaskWithId(taskId));
     }
 
+    @PreAuthorize("hasPermission(#taskId, 'Task', 'edit')")
     @RequestMapping(value = "/assignTo/tasks/{taskId}", method = RequestMethod.HEAD)
     public ResponseEntity<Void> isAssignedToTaskByIdExist(@PathVariable Long taskId) {
         return Boolean.TRUE.equals(userService.isAssignedToTaskWithIdExist(taskId)) ?

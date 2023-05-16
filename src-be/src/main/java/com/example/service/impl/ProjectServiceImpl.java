@@ -38,18 +38,18 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectDto update(Project project) {
+    public Project update(Project project) {
         if (!projectRepository.existsById(project.getId())) {
             throw new EntityNotFoundException(String.format("Can't update Project with id: %d", project.getId()));
         }
-        return projectMapper.projectToProjectDto(projectRepository.save(project));
+        return projectRepository.save(project);
     }
 
     @Override
     public ProjectDto update(Long projectId, ProjectDto projectDto) {
         Project project = getById(projectId);
         project.setDescription(projectDto.getDescription());
-        return update(project);
+        return projectMapper.projectToProjectDto(update(project));
     }
 
     @Override
@@ -89,10 +89,10 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void assignUsersToProjectById(Long projectId, List<User> users) {
+    public Project assignUsersToProjectById(Long projectId, List<User> users) {
         Project project = getProjectWithAssignedUsersById(projectId);
         project.addAssignUsers(users);
-        update(project);
+        return update(project);
     }
 
     private Project getProjectWithAssignedUsersById(Long projectId) {
