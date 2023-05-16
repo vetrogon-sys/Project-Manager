@@ -53,18 +53,18 @@ public class AuthorityServiceImpl implements AuthorityService {
     }
 
     @Override
-    public boolean existsByProjectIdAndAssignedEmailEquals(Long projectId, String assignedEmail) {
-        return authorityRepository.existsByRelatedProjectIdEqualsAndAssignedEmailEquals(projectId, assignedEmail);
+    public boolean existsByProjectIdAndPermissionAndAssignedEmailEquals(Long projectId, String assignedEmail, String permission) {
+        return authorityRepository.existsByRelatedProjectIdEqualsAndAssignedEmailEqualsAndOpportunitiesOpportunityEquals(projectId, assignedEmail, permission);
     }
 
     @Override
-    public boolean existByDeskInProjectIdAndAssignedUserEmail(Long deskId, String assignedEmail) {
-        return authorityRepository.existsByRelatedProjectDesksIdEqualsAndAssignedEmailEquals(deskId, assignedEmail);
+    public boolean existByDeskInProjectIdAndPermissionAndAssignedUserEmail(Long deskId, String assignedEmail, String permission) {
+        return authorityRepository.existsByRelatedProjectDesksIdEqualsAndAssignedEmailEqualsAndOpportunitiesOpportunityEquals(deskId, assignedEmail, permission);
     }
 
     @Override
-    public boolean existsByTaskInProjectIdAndAssignedUserEmail(Long taskId, String assignedEmail) {
-        return authorityRepository.existsByRelatedProjectDesksTasksIdEqualsAndAssignedEmailEquals(taskId, assignedEmail);
+    public boolean existsByTaskInProjectIdAndPermissionAndAssignedUserEmail(Long taskId, String assignedEmail, String permission) {
+        return authorityRepository.existsByRelatedProjectDesksTasksIdEqualsAndAssignedEmailEqualsAndOpportunitiesOpportunityEquals(taskId, assignedEmail, permission);
     }
 
     private String buildAuthoritySignature(Long userId, Long projectId, List<SecurityOpportunity> opportunities) {

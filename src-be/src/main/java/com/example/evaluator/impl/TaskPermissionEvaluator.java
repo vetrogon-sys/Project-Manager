@@ -31,6 +31,6 @@ public class TaskPermissionEvaluator implements TypePermissionEvaluator {
               || Objects.isNull(targetId)) {
             return false;
         }
-        return authorityService.existsByTaskInProjectIdAndAssignedUserEmail((Long) targetId, authentication.getName());
+        return authorityService.existsByTaskInProjectIdAndPermissionAndAssignedUserEmail((Long) targetId, authentication.getName(), permission.toString());
     }
 }

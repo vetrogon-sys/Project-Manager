@@ -13,11 +13,10 @@ public interface AuthorityRepository extends JpaRepository<Authority, Long> {
     List<Authority> findAllByAssignedEmail(String email);
 
     Optional<Authority> findBySignature(String signature);
+    boolean existsByRelatedProjectIdEqualsAndAssignedEmailEqualsAndOpportunitiesOpportunityEquals(Long projectId, String assignedEmail, String opportunity);
 
-    boolean existsByRelatedProjectIdEqualsAndAssignedEmailEquals(Long projectId, String assignedEmail);
+    boolean existsByRelatedProjectDesksIdEqualsAndAssignedEmailEqualsAndOpportunitiesOpportunityEquals(Long deskId, String assignedEmail, String opportunity);
 
-    boolean existsByRelatedProjectDesksIdEqualsAndAssignedEmailEquals(Long deskId, String assignedEmail);
-
-    boolean existsByRelatedProjectDesksTasksIdEqualsAndAssignedEmailEquals(Long taskId, String assignedEmail);
+    boolean existsByRelatedProjectDesksTasksIdEqualsAndAssignedEmailEqualsAndOpportunitiesOpportunityEquals(Long taskId, String assignedEmail, String opportunity);
 
 }

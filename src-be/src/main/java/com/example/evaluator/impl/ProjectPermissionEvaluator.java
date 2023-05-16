@@ -13,7 +13,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ProjectPermissionEvaluator implements TypePermissionEvaluator {
 
-    private static final String TYPE = "PROJECT";
+    private static final String TYPE = "Project";
     private final AuthorityService authorityService;
 
     @Override
@@ -32,6 +32,6 @@ public class ProjectPermissionEvaluator implements TypePermissionEvaluator {
               || Objects.isNull(targetId)) {
             return false;
         }
-        return authorityService.existsByProjectIdAndAssignedEmailEquals((Long) targetId, authentication.getName());
+        return authorityService.existsByProjectIdAndPermissionAndAssignedEmailEquals((Long) targetId, authentication.getName(), permission.toString());
     }
 }
