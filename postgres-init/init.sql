@@ -95,3 +95,31 @@ VALUES
     (nextval('task_id_sequence'), 'Tested task 12', 4),
     (nextval('task_id_sequence'), 'Tested task 13', 4),
     (nextval('task_id_sequence'), 'Tested task 14', 4);
+
+INSERT INTO
+    SECURITY_OPPORTUNITIES (opportunity)
+VALUES
+    ('get'),
+    ('create'),
+    ('delete'),
+    ('edit');
+
+INSERT INTO
+    AUTHORITIES (id, signature, assigned_user_id, related_project_id)
+VALUES
+    (nextval('authority_id_sequence'), 'user_1_project_1_get_create_delete_edit', 1, 1),
+    (nextval('authority_id_sequence'), 'user_1_project_2_get_create_delete_edit', 1, 2),
+    (nextval('authority_id_sequence'), 'user_2_project_3_get_create_delete_edit', 2, 3),
+    (nextval('authority_id_sequence'), 'user_2_project_4_get_create_delete_edit', 2, 4),
+    (nextval('authority_id_sequence'), 'user_3_project_5_get_create_delete_edit', 3, 5),
+    (nextval('authority_id_sequence'), 'user_4_project_6_get_create_delete_edit', 4, 6),
+    (nextval('authority_id_sequence'), 'user_1_project_5_get_edit', 1, 5),
+    (nextval('authority_id_sequence'), 'user_2_project_1_get_edit', 2, 1),
+    (nextval('authority_id_sequence'), 'user_2_project_5_get_edit', 2, 5),
+    (nextval('authority_id_sequence'), 'user_3_project_2_get_edit', 3, 2),
+    (nextval('authority_id_sequence'), 'user_3_project_6_get_edit', 3, 6),
+    (nextval('authority_id_sequence'), 'user_4_project_1_get_edit', 4, 1),
+    (nextval('authority_id_sequence'), 'user_4_project_3_get_edit', 4, 3),
+    (nextval('authority_id_sequence'), 'user_5_project_1_get_edit', 5, 1),
+    (nextval('authority_id_sequence'), 'user_5_project_2_get_edit', 5, 2),
+    (nextval('authority_id_sequence'), 'user_5_project_5_get_edit', 5, 5);

@@ -43,7 +43,30 @@ create table USER_PROJECTS (
     constraint fk_user_id foreign key (user_id) references USERS(id)
 );
 
+create table AUTHORITIES (
+    id bigserial not null,
+    signature varchar(255),
+    related_project_id int8 not null,
+    assigned_user_id int8 not null,
+    primary key(id),
+    constraint fk_related_project_id foreign key (related_project_id) references PROJECTS(id),
+    constraint fk_assign_user_id foreign key (assigned_user_id) references USERS(id)
+);
+
+create table SECURITY_OPPORTUNITIES (
+    opportunity varchar(255) not null,
+    primary key (opportunity)
+);
+
+create table AUTHORITY_OPPORTUNITIES (
+    authority_id int8 not null,
+    opportunity_id varchar not null,
+    constraint fk_authority_id foreign key (authority_id) references AUTHORITIES(id),
+    constraint fk_opportunity_id foreign key (opportunity_id) references SECURITY_OPPORTUNITIES(opportunity)
+);
+
 create sequence user_id_sequence start 1;
 create sequence project_id_sequence start 1;
 create sequence desk_id_sequence start 1;
 create sequence task_id_sequence start 1;
+create sequence authority_id_sequence start 1;
