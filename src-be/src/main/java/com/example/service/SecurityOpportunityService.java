@@ -8,6 +8,8 @@ public interface SecurityOpportunityService {
 
     List<SecurityOpportunity> getAll();
 
+    List<SecurityOpportunity> getBasicOpportunities();
+
     SecurityOpportunity getById(String opportunity);
 
 }

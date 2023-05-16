@@ -15,7 +15,7 @@ public interface ProjectService {
 
     Project create(Project project);
 
-    ProjectDto update(Project project);
+    Project update(Project project);
 
     ProjectDto update(Long projectId, ProjectDto projectDto);
 
@@ -29,5 +29,5 @@ public interface ProjectService {
 
     void removeAssignedUsersWithIdsFromProjectWithId(List<Long> idsList, Long projectId);
 
-    void assignUsersToProjectById(Long projectId, List<User> users);
+    Project assignUsersToProjectById(Long projectId, List<User> users);
 }

@@ -3,6 +3,7 @@ package com.example.service.impl;
 import com.example.dto.ProjectDto;
 import com.example.entity.Project;
 import com.example.entity.User;
+import com.example.entity.security.SecurityOpportunity;
 import com.example.mapper.ProjectMapper;
 import com.example.service.AuthorityService;
 import com.example.service.ProjectService;
@@ -28,7 +29,13 @@ public class UsersInProjectServiceImpl implements UsersInProjectService {
     public void assignUsersByIdsToProjectById(Long projectId, List<Long> usersIds) {
         List<User> usersToAssign = userService.getAllByIds(usersIds);
 
-        projectService.assignUsersToProjectById(projectId, usersToAssign);
+        Project project = projectService.assignUsersToProjectById(projectId, usersToAssign);
+
+        List<SecurityOpportunity> basicOpportunities = securityOpportunityService.getBasicOpportunities();
+
+        usersToAssign.forEach(
+              user -> authorityService.createAuthority(project, user, basicOpportunities)
+        );
     }
 
     @Override

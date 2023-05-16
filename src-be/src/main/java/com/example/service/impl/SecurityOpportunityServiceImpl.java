@@ -13,11 +13,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityOpportunityServiceImpl implements SecurityOpportunityService {
 
+    private static final List<String> BASIC_OPPORTUNITIES_IDS = List.of("edit", "get");
     private final SecurityOpportunityRepository securityOpportunityRepository;
 
     @Override
     public List<SecurityOpportunity> getAll() {
         return securityOpportunityRepository.findAll();
+    }
+
+    @Override
+    public List<SecurityOpportunity> getBasicOpportunities() {
+        return securityOpportunityRepository.findAllById(BASIC_OPPORTUNITIES_IDS);
     }
 
     @Override
