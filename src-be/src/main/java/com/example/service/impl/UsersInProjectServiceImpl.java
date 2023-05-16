@@ -4,7 +4,9 @@ import com.example.dto.ProjectDto;
 import com.example.entity.Project;
 import com.example.entity.User;
 import com.example.mapper.ProjectMapper;
+import com.example.service.AuthorityService;
 import com.example.service.ProjectService;
+import com.example.service.SecurityOpportunityService;
 import com.example.service.UserService;
 import com.example.service.UsersInProjectService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,9 @@ public class UsersInProjectServiceImpl implements UsersInProjectService {
     private final ProjectService projectService;
     private final ProjectMapper projectMapper;
 
+    private final AuthorityService authorityService;
+    private final SecurityOpportunityService securityOpportunityService;
+
     @Override
     public void assignUsersByIdsToProjectById(Long projectId, List<Long> usersIds) {
         List<User> usersToAssign = userService.getAllByIds(usersIds);
@@ -32,6 +37,10 @@ public class UsersInProjectServiceImpl implements UsersInProjectService {
         Project project = projectMapper.projectDtoToProject(projectDto);
         project.setCreator(currentUser);
         Project savedProject = projectService.create(project);
+
+        authorityService
+              .createAuthority(savedProject, currentUser, securityOpportunityService.getAll());
+
         return projectMapper.projectToProjectDto(savedProject);
     }
 
