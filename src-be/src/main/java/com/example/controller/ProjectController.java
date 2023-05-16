@@ -6,6 +6,7 @@ import com.example.service.UsersInProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,12 +36,14 @@ public class ProjectController {
               .ok(usersInProjectService.createProject(projectDto, principal.getName()));
     }
 
+    @PreAuthorize("hasPermission(#projectId, 'Project', 'get')")
     @GetMapping("/{projectId}")
     public ResponseEntity<ProjectDto> getById(@PathVariable Long projectId) {
         return ResponseEntity
               .ok(projectService.getByIdAsDto(projectId));
     }
 
+    @PreAuthorize("hasPermission(#projectId, 'Project', 'edit')")
     @PatchMapping("/{projectId}")
     public ResponseEntity<ProjectDto> update(@PathVariable Long projectId,
                                              @RequestBody ProjectDto projectDto) {
@@ -62,6 +65,7 @@ public class ProjectController {
               .ok(projectService.getAllWhereUserWithEmailIsAssigned(principal.getName(), pageable));
     }
 
+    @PreAuthorize("hasPermission(#projectId, 'Project', 'edit')")
     @PatchMapping("/{projectId}/users/{usersIds}")
     public ResponseEntity<Void> assignUsersToProjects(@PathVariable Long projectId,
                                                       @PathVariable Long[] usersIds) {
@@ -71,6 +75,7 @@ public class ProjectController {
               .build();
     }
 
+    @PreAuthorize("hasPermission(#projectId, 'Project', 'edit')")
     @DeleteMapping("/{projectId}/users/{usersIds}")
     public ResponseEntity<Void> unasignUsersWithIdsFromProjectWithId(@PathVariable Long projectId,
                                                                      @PathVariable Long[] usersIds) {

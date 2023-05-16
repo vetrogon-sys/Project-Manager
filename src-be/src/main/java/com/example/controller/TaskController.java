@@ -68,7 +68,7 @@ public class TaskController {
                 .ok().build();
     }
 
-    @PreAuthorize("hasPermission(#deskId, 'Desk', 'edit')")
+    @PreAuthorize("hasPermission(#deskId, 'Desk', 'get')")
     @GetMapping
     public ResponseEntity<List<TaskDto>> getAllTasksFromDesk(@PathVariable Long deskId, Pageable pageable) {
         return ResponseEntity

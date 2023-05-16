@@ -5,6 +5,7 @@ import com.example.service.DesksInProjectService;
 import com.example.service.TasksInDeskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ public class DeskController {
     private final DesksInProjectService desksInProjectService;
     private final TasksInDeskService tasksInDeskService;
 
+    @PreAuthorize("hasPermission(#projectId, 'Project', 'get')")
     @GetMapping
     public ResponseEntity<List<DeskDto>> getAllDesksFromProject(@PathVariable Long projectId) {
 
@@ -32,6 +34,7 @@ public class DeskController {
               .ok(desksInProjectService.getAllDesksFromProjectById(projectId));
     }
 
+    @PreAuthorize("hasPermission(#projectId, 'Project', 'create')")
     @PostMapping
     public ResponseEntity<Void> createDesksInProject(@PathVariable Long projectId, @RequestBody DeskDto deskDto,
                                                      HttpServletRequest request) {
@@ -46,6 +49,7 @@ public class DeskController {
               .build();
     }
 
+    @PreAuthorize("hasPermission(#deskId, 'Desk', 'delete')")
     @DeleteMapping("/{deskId}")
     public ResponseEntity<Void> deleteDesksInProject(@PathVariable Long deskId) {
         tasksInDeskService.deleteAllTasksFromDesk(deskId);
