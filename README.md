@@ -1,86 +1,72 @@
-# Project-Manager
+Project-Manager
+=
 
-# Start project
+Repository contains example of to-do-application inspired Trello
 
-## Start project in production mode
+Available modules
+==
 
-- fill `.env` file with data </br>
-  `.env` example:
-  ```
-   POSTGRES_USER=user
-   POSTGRES_PASSWORD=admin
-   POSTGRES_DB=project-manager
-   PGADMIN_DEFAULT_EMAIL=admin@admin.com
-   PGADMIN_DEFAULT_PASSWORD=admin
-   JWT_TOKEN_SECRET=secret-key
-   JWT_TOKEN_VALIDITY_IN_MILLISECONDS=3000
-  ```
-- from project root directory start database container. </br>`docker-compose up postgresdb`
-- After container build run remaining containers. </br>`docker-compose up`
+* `src-be` - backend entry point
+* `src-fe` - frontend entry point
+* `postgres-init` - sql scripts to initialize database tables and fill them with some data
 
-## Start project for development
+Request data
+==
 
-- Start PostgreSQL From Docker:
-  -
-    - fill `.env` file with data
-        - **if need in `docker-compose.yaml` file change postgresql or pgAdmin port**
-    - run command `docker-compose up`
-    - wait until docker start
+All backend endpoints are documented with Swagger and available in `/api/swagger-ui/` endpoint
 
-  `.env` file example:
-  ```
-   POSTGRES_USER=user
-   POSTGRES_PASSWORD=admin
-   POSTGRES_DB=project-manager
-   PGADMIN_DEFAULT_EMAIL=admin@admin.com
-   PGADMIN_DEFAULT_PASSWORD=admin
-   JWT_TOKEN_SECRET=secret-key
-   JWT_TOKEN_VALIDITY_IN_MILLISECONDS=3000
-  ```
+Building aps
+==
 
-- Start SpringBoot back-end application
-    -
+By default:
+* database start on port 5433
+* backend start on port 8080
+* frontend start on port 3000
 
-    - in `src-be/src/main/resources/application-local.properties` file 
-      fill required fields with data from `.env` file </br> Example:
-      ```
-      postgres.port=5433
-      postgres.db.name=project-manager
-      postgres.username=user
-      postgres.password=admin
-      security.jwt.token.secret-key=secret-key
-      security.jwt.token.expire-length=3000
-      ```
+To change in file `docker-compose.yml` change to necessary ports 
 
-    - Start application from IntellijIDEA
-      -
-        - open `./src-be` folder as IntellijIDEA project
-        - configure *'Profiles'* of application for it:
-            - open *'edit configurations...'* menu
-            - create new configuration with type *'Application'*
-            - choose `src/main/java/com/example/ProjectManagerApplication.java` as *'main class'*
-            - activate *'local'* profile for it in VM options menu add following option:</br>
-              `-Dspring.profiles.active=local`
-        - run configured application
+Building app using Docker
+===
 
-    - Start application as maven project
-      -
-        - open `./src-be` directory
-        - open command line
-        - run `mvn spring-boot:run -Dspring.profiles.active=local` command
+* fill `.env` file with required data
+* from root folder run `docker-compose build` to build containers
+* start database, for it run `docker-compose up postgresdb`
+* run application using `docker-compose up`
 
-- Start React front-end application
-    -
-  - Using Docker
-    - 
-      - open `./src-fe` directory
-      - run `npm install` to download required dependencies
-      - run `npm start` to start application
-    
-  - Without Docker
-    - 
-      - run spring-boot back-end application
-      - open `./src-fe/src/setupProxy.js` file and change `pm-be` host to `localhost`
-      - go to `./src-fe` directory
-      - run `npm install` to download required dependencies
-      - run `npm start` to start application
+Start application for development
+===
+
+* fill `.env` file with required data
+* start database, for it run `docker-compose up postgresdb`
+
+Start as Spring Boot application from IDE
+====
+
+* open `src-be` as maven module
+* set up profiles to `local`
+* run `main` method in `com.example.ProjectManagerApplication.java`
+
+Start as Maven project
+====
+
+* open `src-be` directory
+* in command line run `mvn spring-boot:run -Dspring.profiles.active=local`
+
+Start frontend using docker
+===
+
+* from root folder run `docker-compose build pm-be` to build backend container
+* start backend, for it run `docker-compose up pm-be`
+* open `src-fe` directory
+* in file `src.setupProxy.js` change host from `pm-be` to `localhost`
+* run `npm install`
+* run `npm start`
+
+Start frontend without docker
+===
+
+* run backend application
+* open `src-fe` directory
+* in file `src.setupProxy.js` change host from `pm-be` to `localhost`
+* run `npm install`
+* run `npm start`
