@@ -4,6 +4,7 @@ import com.example.dto.TaskDto;
 import com.example.service.TaskService;
 import com.example.service.TasksInDeskService;
 import com.example.service.UsersTasksService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +48,7 @@ public class TaskController {
                 .build();
     }
 
+    @ApiOperation("Move task with id from current desk to another by id")
     @PatchMapping("/{taskId}/moveTo/desks/{anotherDeskId}")
     public ResponseEntity<Void> moveTaskToAnotherDesk(@PathVariable Long deskId, @PathVariable Long taskId,
                                                       @PathVariable Long anotherDeskId) {

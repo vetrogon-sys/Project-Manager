@@ -24,6 +24,19 @@ import org.springframework.security.web.SecurityFilterChain;
 )
 @RequiredArgsConstructor
 public class WebSecurityConfiguration {
+    private static final String[] SWAGGER_WHITELIST = {
+
+          "/v2/api-docs",
+          "/swagger-resources",
+          "/swagger-resources/**",
+          "/configuration/ui",
+          "/configuration/security",
+          "/swagger-ui.html",
+          "/webjars/**",
+
+          "/v3/api-docs/**",
+          "/swagger-ui/**"
+    };
 
     private final TokenProvider tokenProvider;
 
@@ -41,6 +54,9 @@ public class WebSecurityConfiguration {
               .authorizeRequests()
               .antMatchers("/auth/signin").permitAll()
               .antMatchers("/auth/signup").permitAll()
+
+              .antMatchers(SWAGGER_WHITELIST).permitAll()
+
               .anyRequest().authenticated();
 
         http
@@ -51,7 +67,6 @@ public class WebSecurityConfiguration {
 
         return http.build();
     }
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
