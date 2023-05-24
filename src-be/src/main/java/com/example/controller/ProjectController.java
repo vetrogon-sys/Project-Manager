@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.dto.ProjectDto;
 import com.example.service.ProjectService;
 import com.example.service.UsersInProjectService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +49,7 @@ public class ProjectController {
               .ok(projectService.update(projectId, projectDto));
     }
 
+    @ApiOperation("Find all projects for current user")
     @GetMapping("/myself/created")
     public ResponseEntity<List<ProjectDto>> getCurrentUserCreatedProjects(Authentication principal,
                                                                           Pageable pageable) {
@@ -55,6 +57,7 @@ public class ProjectController {
               .ok(projectService.getAllWhereUserWithEmailIsCreator(principal.getName(), pageable));
     }
 
+    @ApiOperation("Find all projects where current user is assigned")
     @GetMapping("/myself/assigned")
     public ResponseEntity<List<ProjectDto>> getCurrentUserAssignedProjects(Authentication principal,
                                                                            Pageable pageable) {

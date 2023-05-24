@@ -18,6 +18,11 @@
 - from project root directory start database container. </br>`docker-compose up postgresdb`
 - After container build run remaining containers. </br>`docker-compose up`
 
+## Api documentation
+    
+Api documentation automatically generated with Swagger.
+Can get documentation  in `/api/swagger-ui/`
+
 ## Start project for development
 
 - Start PostgreSQL From Docker:
