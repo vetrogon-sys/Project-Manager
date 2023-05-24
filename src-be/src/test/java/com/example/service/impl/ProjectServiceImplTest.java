@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -93,7 +94,7 @@ public class ProjectServiceImplTest {
 
         Project actualProject = projectService.create(projectWithoutId);
 
-        verify(projectRepository, times(1)).save(projectWithoutId);
+        verify(projectRepository, times(1)).save(eq(projectWithoutId));
         assertEquals(projectWithoutId, actualProject);
     }
 
@@ -101,17 +102,20 @@ public class ProjectServiceImplTest {
     public void updateIfProjectExist() {
         long projectId = 1L;
         Project project = TestConstants.getProjectWithId(projectId);
+        ProjectDto projectDto = TestConstants.getProjectDtoWithoutId();
 
         when(projectRepository.existsById(projectId))
               .thenReturn(true);
         when(projectRepository.save(project))
               .thenAnswer(i -> i.getArguments()[0]);
+        when(projectMapper.projectToProjectDto(any(Project.class)))
+              .thenReturn(projectDto);
 
-        Project actualProject = projectService.update(project);
+        ProjectDto actualProject = projectService.update(project);
 
         verify(projectRepository, times(1)).existsById(projectId);
         verify(projectRepository, times(1)).save(project);
-        assertEquals(project, actualProject);
+        assertEquals(projectDto, actualProject);
     }
 
     @Test(expected = EntityNotFoundException.class)
