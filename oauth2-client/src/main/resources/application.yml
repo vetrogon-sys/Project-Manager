@@ -4,3 +4,14 @@ server:
 spring:
   application:
     name: oauth2-client
+  security:
+    oauth2:
+      client:
+        useCurrentUri: false
+        registration:
+          google:
+            clientId:
+            clientSecret:
+            scope:
+              - email
+              - profile
